@@ -1,39 +1,26 @@
 #include <stdio.h>
-#include <stdlib.h>
+#include <sys/types.h>
 
-enum CommandType{
-    A_COMMAND,
-    C_COMMAND,
-    L_COMMAND,
-    COMMENT,
-    EMPTY_LINE,
-    ASM_EOF,
-};
+#include "parser.h"
 
 
-struct Parser {
-    FILE *file;                // pointer to open file
-    int line_number;           // current line in open file
-    enum CommandType command_type;  // current command type
-};
-
-
-struct Parser new_parser(const char* filename) {
-    struct Parser* p = NULL;
-    p = (struct Parser*) malloc(sizeof(struct Parser));
-    if (p == NULL) {
-        return NULL;
+struct Command parse_line(char line[]) {
+    struct Command command;
+    if (line == "\n\0") {
+        struct Command command = {EMPTY_LINE};
+        return command;
     }
 }
 
-int has_more_commands(struct Parser* p) {
-   if (feof(p->file)) return 0;
-   else return 1;
-}
 
-void advance(struct Parser* p) {
-    if (has_more_commands(p))
-        p->line += 1;
-    else
-        
+void first_pass(FILE *fp) {
+    char *line = NULL;
+    size_t len = 0;
+    ssize_t read;
+
+    while ((read = getline(&line, &len, fp)) != -1)
+    {
+        struct Command command = parse_line(line);
+    }
+
 }
