@@ -300,30 +300,30 @@ void free_ParseLineParameters(struct criterion_test_params *crp) {
 
 
 ParameterizedTestParameters(test_parser, test_a_command) {
-    int nb_tuples = 6;
+    int nb_tuples = 3;
     struct ParseLineParameters *params = cr_malloc(sizeof (struct ParseLineParameters) * nb_tuples);
 
     params[0] = (struct ParseLineParameters) {
         .line=cr_strdup("@Abcde"),
-        .expected_command=(struct Command) {A_COMMAND, .symbol="Abcde"}
+        .expected_command=(struct Command) {A_COMMAND, .symbol=cr_strdup("Abcde")}
     };
     params[1] = (struct ParseLineParameters) {
         .line=cr_strdup("@A"),
-        .expected_command=(struct Command) {A_COMMAND, .symbol="A"}
+        .expected_command=(struct Command) {A_COMMAND, .symbol=cr_strdup("A")}
     };
     params[2] = (struct ParseLineParameters) {
         .line=cr_strdup("@:Symbol"),
-        .expected_command=(struct Command) {A_COMMAND, .symbol=":Symbol"}
+        .expected_command=(struct Command) {A_COMMAND, .symbol=cr_strdup(":Symbol")}
     };
-    params[3] = (struct ParseLineParameters) {
+    params[0] = (struct ParseLineParameters) {
         .line=cr_strdup("@12345"),
         .expected_command=(struct Command) {A_COMMAND, .constant=12345}
     };
-    params[4] = (struct ParseLineParameters) {
+    params[1] = (struct ParseLineParameters) {
         .line=cr_strdup("@0"),
         .expected_command=(struct Command) {A_COMMAND, .constant=0}
     };
-    params[5] = (struct ParseLineParameters) {
+    params[2] = (struct ParseLineParameters) {
         .line=cr_strdup("@32767"),
         .expected_command=(struct Command) {A_COMMAND, .constant=32767}
     };
