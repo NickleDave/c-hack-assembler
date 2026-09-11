@@ -27,6 +27,7 @@ void remove_spaces(char str_trimmed[], char str_untrimmed[]);
 bool is_all_digits(char str[]);
 int constant_str_to_int(char * constant_str);
 bool is_valid_symbol(char str[]);
+int char_count(char * str, char char_);
 struct Command parse_line(char line[]);
 void first_pass(FILE *fp);
 
