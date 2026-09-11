@@ -133,7 +133,7 @@ void free_ConstantStrToInt(struct criterion_test_params *crp)
 
 
 ParameterizedTestParameters(test_parser, test_constant_str_to_int) {
-    int nb_tuples = 4;
+    int nb_tuples = 5;
     struct ConstantStrToInt *params = cr_malloc(sizeof (struct ConstantStrToInt) * nb_tuples);
 
     params[0] = (struct ConstantStrToInt) {
@@ -209,6 +209,64 @@ ParameterizedTestParameters(test_parser, test_is_valid_symbol) {
 };
 
 
+
+// ---- test `char_count` ----------------------------------------------------------------------------------------------------
+struct CharCount {
+    char * str;
+    char char_;
+    int expected_return_value;
+};
+
+
+void free_CharCount(struct criterion_test_params *crp)
+{
+    cr_free(crp->params);
+}
+
+
+ParameterizedTestParameters(test_parser, test_char_count) {
+    int nb_tuples = 5;
+    struct CharCount *params = cr_malloc(sizeof (struct CharCount) * nb_tuples);
+
+    params[0] = (struct CharCount) {
+        .str=cr_strdup("M=D"),
+        .char_='=',
+        .expected_return_value=1 
+    };
+    params[1] = (struct CharCount) {
+        .str=cr_strdup("M=D;JMP"),
+        .char_=';',
+        .expected_return_value=1 
+    };
+    params[2] = (struct CharCount) {
+        .str=cr_strdup("M==D"),
+        .char_='=',
+        .expected_return_value=2
+    };
+    params[3] = (struct CharCount) {
+        .str=cr_strdup("M=D;;JMP"),
+        .char_=';',
+        .expected_return_value=2
+    };
+    params[4] = (struct CharCount) {
+        .str=cr_strdup(";JMP"),
+        .char_='=',
+        .expected_return_value=0
+    };
+
+    return cr_make_param_array(
+        struct ConstantStrToInt, params, nb_tuples, free_ConstantStrToInt
+    );
+};
+
+
+ParameterizedTest(struct CharCount *params, test_parser, test_char_count)
+{
+    int returned_value = char_count(params->str, params->char_);
+    cr_assert(eq(int, params->expected_return_value, returned_value));
+}
+
+
 ParameterizedTest(struct IsSomething *params, test_parser, test_is_valid_symbol)
 {
     bool returned_value = is_valid_symbol(params->str);
@@ -221,14 +279,33 @@ ParameterizedTest(struct IsSomething *params, test_parser, test_is_valid_symbol)
 // ---- helpers for testing `Command` -----------------------------------------------------------------------------
 int cr_user_Command_eq(struct Command *a, struct Command *b)
 {
-    return (
-        a->command_type == b->command_type &&
-        a->symbol == b->symbol &&
-        a->constant == b->constant &&
-        a->dest == b->dest &&
-        a->comp == b->comp &&
-        a->jump == b->jump
-    );
+    bool are_equal;
+    if (a->symbol == NULL || b->symbol == NULL) {
+        are_equal = (
+            a->command_type == b->command_type &&
+            // next line: `!strcmp` (with exclamation mark) 
+            // because it returns 0 when strings match
+            a->symbol == b->symbol &&
+            a->constant == b->constant &&
+            a->dest == b->dest &&
+            a->comp == b->comp &&
+            a->jump == b->jump
+        );
+    }
+    else {
+        are_equal = (
+            a->command_type == b->command_type &&
+            // next line: `!strcmp` (with exclamation mark) 
+            // because it returns 0 when strings match
+            !strcmp(a->symbol, b->symbol) &&
+            a->constant == b->constant &&
+            a->dest == b->dest &&
+            a->comp == b->comp &&
+            a->jump == b->jump
+        );
+
+    }
+    return are_equal;
 }
 
 char *cr_user_Command_tostr(struct Command *d)
@@ -275,7 +352,7 @@ Test(test_parser, test_parse_comment_with_whitespace)
 }
 
 
-Test(test_parser, test_empty_line_with_whitespace)
+Test(test_parser, test_parse_empty_line_with_whitespace)
 {
     char line[] = "   ";
     struct Command expected_command = {EMPTY_LINE};
@@ -300,7 +377,7 @@ void free_ParseLineParameters(struct criterion_test_params *crp) {
 
 
 ParameterizedTestParameters(test_parser, test_a_command) {
-    int nb_tuples = 3;
+    int nb_tuples = 6;
     struct ParseLineParameters *params = cr_malloc(sizeof (struct ParseLineParameters) * nb_tuples);
 
     params[0] = (struct ParseLineParameters) {
@@ -315,15 +392,15 @@ ParameterizedTestParameters(test_parser, test_a_command) {
         .line=cr_strdup("@:Symbol"),
         .expected_command=(struct Command) {A_COMMAND, .symbol=cr_strdup(":Symbol")}
     };
-    params[0] = (struct ParseLineParameters) {
+    params[3] = (struct ParseLineParameters) {
         .line=cr_strdup("@12345"),
         .expected_command=(struct Command) {A_COMMAND, .constant=12345}
     };
-    params[1] = (struct ParseLineParameters) {
+    params[4] = (struct ParseLineParameters) {
         .line=cr_strdup("@0"),
         .expected_command=(struct Command) {A_COMMAND, .constant=0}
     };
-    params[2] = (struct ParseLineParameters) {
+    params[5] = (struct ParseLineParameters) {
         .line=cr_strdup("@32767"),
         .expected_command=(struct Command) {A_COMMAND, .constant=32767}
     };
@@ -339,3 +416,34 @@ ParameterizedTest(struct ParseLineParameters *params, test_parser, test_a_comman
     struct Command returned_command = parse_line(params->line);
     cr_assert(eq(type(struct Command), params->expected_command, returned_command));
 }
+
+
+ParameterizedTestParameters(test_parser, test_l_command) {
+    int nb_tuples = 3;
+    struct ParseLineParameters *params = cr_malloc(sizeof (struct ParseLineParameters) * nb_tuples);
+
+    params[0] = (struct ParseLineParameters) {
+        .line=cr_strdup("(Abcde)"),
+        .expected_command=(struct Command) {L_COMMAND, .symbol=cr_strdup("Abcde")}
+    };
+    params[1] = (struct ParseLineParameters) {
+        .line=cr_strdup("(A)"),
+        .expected_command=(struct Command) {L_COMMAND, .symbol=cr_strdup("A")}
+    };
+    params[2] = (struct ParseLineParameters) {
+        .line=cr_strdup("(:Symbol)"),
+        .expected_command=(struct Command) {L_COMMAND, .symbol=cr_strdup(":Symbol")}
+    };
+
+    return cr_make_param_array(
+        struct ParseLineParameters, params, nb_tuples, free_ParseLineParameters
+    );
+};
+
+
+ParameterizedTest(struct ParseLineParameters *params, test_parser, test_l_command)
+{
+    struct Command returned_command = parse_line(params->line);
+    cr_assert(eq(type(struct Command), params->expected_command, returned_command));
+}
+
