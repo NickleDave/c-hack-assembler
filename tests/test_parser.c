@@ -279,33 +279,28 @@ ParameterizedTest(struct IsSomething *params, test_parser, test_is_valid_symbol)
 // ---- helpers for testing `Command` -----------------------------------------------------------------------------
 int cr_user_Command_eq(struct Command *a, struct Command *b)
 {
-    bool are_equal;
-    if (a->symbol == NULL || b->symbol == NULL) {
-        are_equal = (
-            a->command_type == b->command_type &&
-            // next line: `!strcmp` (with exclamation mark) 
-            // because it returns 0 when strings match
-            a->symbol == b->symbol &&
-            a->constant == b->constant &&
-            a->dest == b->dest &&
-            a->comp == b->comp &&
-            a->jump == b->jump
-        );
-    }
-    else {
-        are_equal = (
-            a->command_type == b->command_type &&
-            // next line: `!strcmp` (with exclamation mark) 
-            // because it returns 0 when strings match
-            !strcmp(a->symbol, b->symbol) &&
-            a->constant == b->constant &&
-            a->dest == b->dest &&
-            a->comp == b->comp &&
-            a->jump == b->jump
-        );
-
-    }
-    return are_equal;
+    /* this monstrosity of a conditional is meant to handle the fact that
+    4 of the 6 members of `struct Command` are char arrays that can be NULL,
+    and we will get a segfault if we strcmp with NULL;
+    the ternary operator is saying "if either of these are NULL, test that 
+    they are `==` (both NULL); else test they are equal with `strcmp`"
+    */
+    return(
+        (
+            a->symbol == NULL || b->symbol == NULL
+        // NOTE in next line that `!strcmp` has an exclamation mark, because it returns 0 when strings match
+        ) ? a->command_type == b->command_type : !strcmp(a->symbol, b->symbol) && 
+        a->constant == b->constant &&
+        (
+            a->dest == NULL || b->dest == NULL
+        ) ? a->dest == b->dest : !strcmp(a->dest, b->dest) &&
+        (
+            a->comp == NULL || b->comp == NULL
+        ) ? a->comp == b->comp : !strcmp(a->comp, b->comp) &&
+        (
+            a->jump == NULL || b->jump
+        ) ? a->jump == b->jump : strcmp(a->jump, b->jump)
+    );
 }
 
 char *cr_user_Command_tostr(struct Command *d)
@@ -447,3 +442,44 @@ ParameterizedTest(struct ParseLineParameters *params, test_parser, test_l_comman
     cr_assert(eq(type(struct Command), params->expected_command, returned_command));
 }
 
+
+ParameterizedTestParameters(test_parser, test_c_command) {
+    int nb_tuples = 6;
+    struct ParseLineParameters *params = cr_malloc(sizeof (struct ParseLineParameters) * nb_tuples);
+
+    params[0] = (struct ParseLineParameters) {
+        .line=cr_strdup("D=A"),
+        .expected_command=(struct Command) {C_COMMAND, .dest=cr_strdup("D"), .comp=cr_strdup("A")}
+    };
+    params[1] = (struct ParseLineParameters) {
+        .line=cr_strdup("D=D+A"),
+        .expected_command=(struct Command) {C_COMMAND, .dest=cr_strdup("D"), .comp=cr_strdup("D+A")}
+    };
+    params[2] = (struct ParseLineParameters) {
+        .line=cr_strdup("M=D"),
+        .expected_command=(struct Command) {C_COMMAND, .dest=cr_strdup("M"), .comp=cr_strdup("D")}
+    };
+    params[3] = (struct ParseLineParameters) {
+        .line=cr_strdup("D;JGT"),
+        .expected_command=(struct Command) {C_COMMAND, .comp=cr_strdup("D"), .jump=cr_strdup("JGT")}
+    };
+    params[4] = (struct ParseLineParameters) {
+        .line=cr_strdup("0;JMP"),
+        .expected_command=(struct Command) {C_COMMAND, .comp=cr_strdup("0"), .jump=cr_strdup("JMP")}
+    };
+    params[5] = (struct ParseLineParameters) {
+        .line=cr_strdup("AM=M-1"),
+        .expected_command=(struct Command) {C_COMMAND, .dest=cr_strdup("AM"), .comp=cr_strdup("M-1")}
+    };
+
+    return cr_make_param_array(
+        struct ParseLineParameters, params, nb_tuples, free_ParseLineParameters
+    );
+};
+
+
+ParameterizedTest(struct ParseLineParameters *params, test_parser, test_c_command)
+{
+    struct Command returned_command = parse_line(params->line);
+    cr_assert(eq(type(struct Command), params->expected_command, returned_command));
+}
