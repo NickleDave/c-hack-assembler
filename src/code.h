@@ -7,7 +7,8 @@ https://github.com/ianmurfinxyz/hackass_hack_assembler_c/blob/master/src/decoder
 
 #include <inttypes.h>
 
-const int MAX_MNEMONIC_CHAR_LENGTH = 4; // no language mnemonic in 'Hack' assembly is longer than this.
+// no language mnemonic in 'Hack' assembly is longer than this.
+#define MAX_MNEMONIC_CHAR_LENGTH 4
 
 typedef const struct MnemonicBitsPair {
   const char mnemonic[MAX_MNEMONIC_CHAR_LENGTH];
