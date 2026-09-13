@@ -10,6 +10,7 @@
 
 #include <sys/types.h>
 
+#include "code.h"
 #include "parser.h"
 
 /* 
@@ -211,7 +212,7 @@ struct Command parse_line(char line[]) {
         int equals_count = char_count(line_no_whitespace, '=');
         switch (equals_count) {
             case 0:
-                dest = NULL;
+                dest = "";
                 rest = line_no_whitespace;
                 break;
             case 1:
@@ -227,7 +228,7 @@ struct Command parse_line(char line[]) {
         int semicol_count = char_count(rest, ';');
         switch (semicol_count) {
             case 0:
-                jump = NULL;
+                jump = "";
                 comp = rest;
                 break;
             case 1:
@@ -240,7 +241,19 @@ struct Command parse_line(char line[]) {
                 exit(EXIT_FAILURE);
         }
 
-        // FIXME: post-condition testing that dest+comp+jump are valid
+        if (!is_valid_dest(dest)) {
+            fprintf(stderr, "parse_line: invalid `dest` value '%s' in line:\n%s", dest, line);
+            exit(EXIT_FAILURE);
+        }
+        if (!is_valid_comp(comp)) {
+            fprintf(stderr, "parse_line: invalid `comp` value '%s' in line:\n%s", comp, line);
+            exit(EXIT_FAILURE);
+        }
+        if (!is_valid_jump(jump)) {
+            fprintf(stderr, "parse_line: invalid `jump` value '%s' in line:\n%s", jump, line);
+            exit(EXIT_FAILURE);
+        }
+        
         struct Command command = {C_COMMAND, .dest=dest, .comp=comp, .jump=jump};
         return command;
     }
