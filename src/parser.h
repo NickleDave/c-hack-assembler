@@ -4,6 +4,7 @@
 #ifndef HACK_ASSEMBLER_PARSER_H
 #define HACK_ASSEMBLER_PARSER_H
 
+
 enum CommandType{
     A_COMMAND,
     C_COMMAND,
