@@ -233,7 +233,7 @@ struct Command parse_line(char line[]) {
                 break;
             case 1:
                 char *saveptr_semicolon;
-                rest = strtok_r(rest, SEMICOLON_TOKEN, &saveptr_semicolon);
+                comp = strtok_r(rest, SEMICOLON_TOKEN, &saveptr_semicolon);
                 jump = strtok_r(NULL, SEMICOLON_TOKEN, &saveptr_semicolon);
                 break;
             default:
