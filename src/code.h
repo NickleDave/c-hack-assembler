@@ -1,5 +1,5 @@
 /* 
-adpated from 
+adapted from 
 https://github.com/ianmurfinxyz/hackass_hack_assembler_c/blob/master/src/decoder.c
 */
 #ifndef CODE_H
