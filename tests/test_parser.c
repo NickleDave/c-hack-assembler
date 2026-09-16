@@ -399,10 +399,15 @@ ParameterizedTestParameters(test_parser, test_a_command) {
 };
 
 
+#define assert_command(params) {                                                        \
+    struct Command returned_command = parse_line(params->line);                         \
+    cr_assert(eq(type(struct Command), params->expected_command, returned_command));    \
+}                                                                                       \
+
+
 ParameterizedTest(struct ParseLineParameters *params, test_parser, test_a_command)
 {
-    struct Command returned_command = parse_line(params->line);
-    cr_assert(eq(type(struct Command), params->expected_command, returned_command));
+    assert_command(params)
 }
 
 
@@ -431,8 +436,7 @@ ParameterizedTestParameters(test_parser, test_l_command) {
 
 ParameterizedTest(struct ParseLineParameters *params, test_parser, test_l_command)
 {
-    struct Command returned_command = parse_line(params->line);
-    cr_assert(eq(type(struct Command), params->expected_command, returned_command));
+    assert_command(params)
 }
 
 
@@ -473,6 +477,5 @@ ParameterizedTestParameters(test_parser, test_c_command) {
 
 ParameterizedTest(struct ParseLineParameters *params, test_parser, test_c_command)
 {
-    struct Command returned_command = parse_line(params->line);
-    cr_assert(eq(type(struct Command), params->expected_command, returned_command));
+    assert_command(params)
 }
