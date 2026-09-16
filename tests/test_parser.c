@@ -4,16 +4,9 @@
 #include <criterion/new/assert.h>
 #include <criterion/parameterized.h>
 
-#include "../src/parser.h"
+#include "cr_helpers.h"
 
-// helper used with all functions that have string parameters
-char *cr_strdup(const char *str)
-{
-    char *ptr = cr_malloc(strlen(str) + 1);
-    if (ptr)
-        strcpy(ptr, str);
-    return ptr;
-}
+#include "../src/parser.h"
 
 
 // ---- test `remove_spaces` ----------------------------------------------------------------------------------------------------
