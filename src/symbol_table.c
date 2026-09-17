@@ -40,4 +40,3 @@ struct SymbolAddressPair* add_symbol_to_table(char *symbol, int rom_address, str
     table[new_len - 1] = new_pair;
     return table;
 }
-    
