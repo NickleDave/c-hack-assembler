@@ -13,7 +13,7 @@ void assemble(FILE *fp) {
     ssize_t read;
 
     int rom_address = 0;
-    struct SymbolAddressPair* symbol_table = new_symbol_table();
+    SymbolTable *table = new_symbol_table();
 
     struct Command *parsed_commands = NULL;
     int num_ca_commands_parsed = 0;
@@ -25,8 +25,8 @@ void assemble(FILE *fp) {
         {
         case L_COMMAND:
             /* code */
-            if (!is_symbol_in_table(command.symbol, symbol_table))
-                add_symbol_to_table(command.symbol, symbol_table);
+            if (table_lookup_symbol(command.symbol, &table) == -1)
+                add_symbol_to_table(command.symbol, rom_address, &table);
             break;
         case C_COMMAND:
         case A_COMMAND:
