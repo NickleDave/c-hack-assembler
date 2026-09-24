@@ -3,13 +3,13 @@
 
 
 typedef struct SymbolAddressPair {
-    char * symbol;
     int rom_address;
+    char symbol[];
 } SymbolAddressPair;
 
 
 typedef struct SymbolTable {
-    SymbolAddressPair *pairs;
+    SymbolAddressPair **pairs;
     int len;
 } SymbolTable;
 
