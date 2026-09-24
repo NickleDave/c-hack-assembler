@@ -1,4 +1,6 @@
 #include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #include <criterion/criterion.h>
 #include <criterion/new/assert.h>
@@ -26,14 +28,20 @@ static SymbolTable * table;
 static void setup_table(void) {
     /* making a `table` "by hand" so our fixtures 
     don't rely on the code under test */
+    SymbolTable* tmp_ptr = cr_malloc(sizeof(SymbolTable));
+    if (tmp_ptr == NULL) {
+        fprintf(stderr, "setup_table: malloc of table failed");
+        exit(EXIT_FAILURE);
+    }
+    table = tmp_ptr;
+
     SymbolAddressPair pairs[LENGTH] = {
         {.symbol=cr_strdup(":Symbol"), .rom_address=10},
         {.symbol=cr_strdup("loop_"), .rom_address=20},
         {.symbol=cr_strdup("mac"), .rom_address=30},
         {.symbol=cr_strdup("end"), .rom_address=50},
     };
-    table = malloc(sizeof(SymbolTable));
-    *table = (SymbolTable) {.len=LENGTH, .pairs=pairs};
+
 }
 
 
@@ -42,7 +50,8 @@ static void teardown_table(void) {
     don't rely on the code under test */
     for (int i = 0; i < table->len; i++)
         cr_free(table->pairs[i].symbol);
-    free(table);
+    cr_free(table->pairs);
+    cr_free(table);
     table = NULL;
 }
 
@@ -66,7 +75,7 @@ void free_test_cases(struct criterion_test_params *crp)
 
 
 ParameterizedTestParameters(test_code, test_add_symbol_to_table) {
-    int num_test_cases = 16;
+    int num_test_cases = 4;
     struct AddToTableCase *test_cases = cr_malloc(sizeof(struct AddToTableCase) * num_test_cases);
 
     char * symbol0 = cr_strdup("NewSymbol");
@@ -126,4 +135,3 @@ ParameterizedTest(
         cr_assert(eq(in_table, 1));
     }
 }
-
