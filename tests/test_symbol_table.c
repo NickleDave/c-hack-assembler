@@ -79,6 +79,74 @@ static void teardown_table(void) {
 }
 
 
+/* tests for `table_lookup_symbol` */
+struct TableLookupCase {
+    char * symbol;
+    int expected_address;
+};
+
+
+void free_table_lookup_cases(struct criterion_test_params *crp)
+{
+    for (size_t i=0; i<crp->length; ++i) {
+        struct TableLookupCase *test_case = (struct TableLookupCase *) crp->params + i;
+        cr_free(test_case->symbol);
+    }
+    cr_free(crp->params);
+}
+
+
+ParameterizedTestParameters(test_symbol_table, test_table_lookup_symbol) {
+    int num_test_cases = 6;
+    struct TableLookupCase *test_cases = cr_malloc(sizeof(struct TableLookupCase) * num_test_cases);
+
+    test_cases[0] = (struct TableLookupCase) {
+        .symbol=cr_strdup(":Symbol"),
+        .expected_address=10
+    };
+
+    test_cases[1] = (struct TableLookupCase) {
+        .symbol=cr_strdup("loop_"),
+        .expected_address=20
+    };
+
+    test_cases[2] = (struct TableLookupCase) {
+        .symbol=cr_strdup("mac"),
+        .expected_address=30
+    };
+
+    test_cases[3] = (struct TableLookupCase) {
+        .symbol=cr_strdup("end"),
+        .expected_address=50
+    };
+
+    test_cases[4] = (struct TableLookupCase) {
+        .symbol=cr_strdup("doogiehauser"),
+        .expected_address=-1
+    };
+
+    test_cases[5] = (struct TableLookupCase) {
+        .symbol=cr_strdup("leapdaynight"),
+        .expected_address=-1
+    };
+
+    return cr_make_param_array(
+        struct TableLookupCase, test_cases, num_test_cases, free_table_lookup_cases
+    );
+}
+
+
+ParameterizedTest(
+    struct TableLookupCase *test_case, 
+    test_symbol_table, test_table_lookup_symbol,
+    .init=setup_table, .fini=teardown_table
+) {
+    int address = table_lookup_symbol(test_case->symbol, table);
+    cr_assert(eq(address, test_case->expected_address));
+}
+
+
+/* tests for `add_symbol_to_table */
 struct AddToTableCase {
     char * symbol;
     int address;
@@ -87,7 +155,7 @@ struct AddToTableCase {
 };
 
 
-void free_test_cases(struct criterion_test_params *crp)
+void free_add_to_table_cases(struct criterion_test_params *crp)
 {
     for (size_t i=0; i<crp->length; ++i) {
         struct AddToTableCase *test_case = (struct AddToTableCase *) crp->params + i;
@@ -99,8 +167,7 @@ void free_test_cases(struct criterion_test_params *crp)
 
 
 ParameterizedTestParameters(test_symbol_table, test_add_symbol_to_table) {
-    // int num_test_cases = 4;
-    int num_test_cases = 3;
+    int num_test_cases = 4;
     struct AddToTableCase *test_cases = cr_malloc(sizeof(struct AddToTableCase) * num_test_cases);
 
     char *symbol0 = cr_strdup("NewSymbol");
@@ -149,7 +216,8 @@ ParameterizedTestParameters(test_symbol_table, test_add_symbol_to_table) {
     };
 
     return cr_make_param_array(
-        struct AddToTableCase, test_cases, num_test_cases, free_test_cases
+        struct AddToTableCase, test_cases, num_test_cases, free_add_to_table_cases
+
     );
 }
 
