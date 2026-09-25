@@ -5,6 +5,7 @@
 
 #include "symbol_table.h"
 
+
 SymbolAddressPair* new_pair(char * symbol, int address) {
     SymbolAddressPair *pair = malloc(sizeof(SymbolAddressPair) + sizeof(symbol));
     if (pair == NULL) {
@@ -18,7 +19,6 @@ SymbolAddressPair* new_pair(char * symbol, int address) {
 
 
 void free_pair(SymbolAddressPair *pair) {
-    free(pair->symbol);
     free(pair);
 }
 
@@ -63,7 +63,7 @@ int add_symbol_to_table(char *symbol, int rom_address, SymbolTable* table) {
 
     // ok, now add to table
     table->len++;
-    struct SymbolAddressPair* new_pairs_ptr = realloc(
+    struct SymbolAddressPair** new_pairs_ptr = realloc(
         table->pairs, sizeof(SymbolAddressPair*) * table->len
     );
     if (new_pairs_ptr == NULL) {
