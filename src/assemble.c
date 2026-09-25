@@ -25,8 +25,8 @@ void assemble(FILE *fp) {
         {
         case L_COMMAND:
             /* code */
-            if (table_lookup_symbol(command.symbol, &table) == -1)
-                add_symbol_to_table(command.symbol, rom_address, &table);
+            if (table_lookup_symbol(command.symbol, table) == -1)
+                add_symbol_to_table(command.symbol, rom_address, table);
             break;
         case C_COMMAND:
         case A_COMMAND:
@@ -46,4 +46,6 @@ void assemble(FILE *fp) {
             break;
         }
     }
+
+    free_symbol_table(table);
 }
