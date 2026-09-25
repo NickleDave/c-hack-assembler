@@ -1,6 +1,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <criterion/criterion.h>
 #include <criterion/new/assert.h>
@@ -11,7 +12,7 @@
 #include "../src/symbol_table.h"
 
 
-Test(test_symbol_table, test_new_symbol_table_is_null) {
+Test(test_symbol_table, test_new_symbol_table) {
     SymbolTable * table = new_symbol_table();
     cr_assert(table->pairs == NULL);
     cr_assert(table->len == 0);
@@ -19,39 +20,61 @@ Test(test_symbol_table, test_new_symbol_table_is_null) {
 
 
 /* fixtures for add_symbol_to_table and table_lookup_symbol */
-static SymbolTable * table;
+static SymbolTable *table = NULL;
 
 
 #define LENGTH 4
 
 
+/* make a `table` "by hand" so our fixtures 
+don't rely on the code under test */
 static void setup_table(void) {
-    /* making a `table` "by hand" so our fixtures 
-    don't rely on the code under test */
-    SymbolTable* tmp_ptr = cr_malloc(sizeof(SymbolTable));
+    char *symbols[] = {
+        ":Symbol",
+        "loop_",
+        "mac",
+        "end"
+    };
+    int addresses[] = {
+        10, 20, 30, 50
+    };
+    SymbolAddressPair **pairs = malloc(sizeof(SymbolAddressPair*) * LENGTH);
+    if (pairs == NULL) {
+        fprintf(stderr, "setup_table: malloc of pairs failed");
+        exit(EXIT_FAILURE);
+    }
+    for (int i = 0; i < LENGTH; i++) {
+        char *symbol = symbols[i];
+        int address = addresses[i];
+        SymbolAddressPair *pair = malloc(sizeof(SymbolAddressPair) + sizeof(symbol));
+        if (pair == NULL) {
+            fprintf(stderr, "setup_table: malloc of pair failed");
+            exit(EXIT_FAILURE);
+        }
+        memcpy(pair->symbol, symbol, sizeof(symbol));
+        pair->rom_address = address;
+        pairs[i] = pair;
+    }
+
+    SymbolTable *tmp_ptr = malloc(sizeof(SymbolTable) + sizeof(pairs));
     if (tmp_ptr == NULL) {
-        fprintf(stderr, "setup_table: malloc of table failed");
+        fprintf(stderr, "setup_table: malloc for table failed");
         exit(EXIT_FAILURE);
     }
     table = tmp_ptr;
-
-    SymbolAddressPair pairs[LENGTH] = {
-        {.symbol=cr_strdup(":Symbol"), .rom_address=10},
-        {.symbol=cr_strdup("loop_"), .rom_address=20},
-        {.symbol=cr_strdup("mac"), .rom_address=30},
-        {.symbol=cr_strdup("end"), .rom_address=50},
-    };
-
+    table->len = LENGTH;
+    table->pairs = pairs;
 }
 
 
+/* free a `table` "by hand" so our fixtures 
+don't rely on the code under test */
 static void teardown_table(void) {
-    /* free a `table` "by hand" so our fixtures 
-    don't rely on the code under test */
-    for (int i = 0; i < table->len; i++)
-        cr_free(table->pairs[i].symbol);
-    cr_free(table->pairs);
-    cr_free(table);
+    for (int i = 0; i < LENGTH; i++) {
+        free(table->pairs[i]);
+    }
+    free(table->pairs);
+    free(table);
     table = NULL;
 }
 
@@ -60,7 +83,7 @@ struct AddToTableCase {
     char * symbol;
     int address;
     int expected_success;
-    SymbolAddressPair expected_pair;
+    SymbolAddressPair *expected_pair;
 };
 
 
@@ -69,6 +92,7 @@ void free_test_cases(struct criterion_test_params *crp)
     for (size_t i=0; i<crp->length; ++i) {
         struct AddToTableCase *test_case = (struct AddToTableCase *) crp->params + i;
         cr_free(test_case->symbol);
+        cr_free(test_case->expected_pair);
     }
     cr_free(crp->params);
 }
@@ -78,36 +102,49 @@ ParameterizedTestParameters(test_code, test_add_symbol_to_table) {
     int num_test_cases = 4;
     struct AddToTableCase *test_cases = cr_malloc(sizeof(struct AddToTableCase) * num_test_cases);
 
-    char * symbol0 = cr_strdup("NewSymbol");
+    char *symbol0 = cr_strdup("NewSymbol");
+    SymbolAddressPair *pair0 = cr_malloc(sizeof(SymbolAddressPair) + sizeof(symbol0));
+    memcpy(pair0->symbol, symbol0, sizeof(symbol0));
+    pair0->rom_address = 15;
     test_cases[0] = (struct AddToTableCase) {
         .symbol=symbol0,
-        .address=15,
+        .address=pair0->rom_address,
         .expected_success=0,
-        .expected_pair = (SymbolAddressPair) {.symbol=symbol0, .rom_address=15}
+        .expected_pair=pair0
     };
 
-    char * symbol1 = cr_strdup("loop2");
+    char *symbol1 = cr_strdup("loop2");
+    SymbolAddressPair *pair1 = cr_malloc(sizeof(SymbolAddressPair) + sizeof(symbol1));
+    memcpy(pair1->symbol, symbol1, sizeof(symbol1));
+    pair1->rom_address = 20;
     test_cases[1] = (struct AddToTableCase) {
         .symbol=symbol1,
-        .address=20,
+        .address=pair1->rom_address,
         .expected_success=0,
-        .expected_pair = (SymbolAddressPair) {.symbol=symbol1, .rom_address=20}
+        .expected_pair=pair1
     };
 
-    char * symbol2 = cr_strdup("sum");
-    test_cases[1] = (struct AddToTableCase) {
+    char *symbol2 = cr_strdup("sum");
+    SymbolAddressPair *pair2 = malloc(sizeof(SymbolAddressPair) + sizeof(symbol2));
+    memcpy(pair2->symbol, symbol2, sizeof(symbol2));
+    pair2->rom_address = 32;
+    test_cases[2] = (struct AddToTableCase) {
         .symbol=symbol2,
-        .address=32,
+        .address=pair2->rom_address,
         .expected_success=0,
-        .expected_pair = (SymbolAddressPair) {.symbol=symbol2, .rom_address=28}
+        .expected_pair=pair2
     };
 
-    char * symbol3= cr_strdup("end");
+    // NOTE case we expect to fail because 'end' is already in table
+    char *symbol3 = cr_strdup("end");
+    SymbolAddressPair *pair3 = malloc(sizeof(SymbolAddressPair) + sizeof(symbol3));
+    memcpy(pair3->symbol, symbol3, sizeof(symbol3));
+    pair3->rom_address = 40;
     test_cases[3] = (struct AddToTableCase) {
         .symbol=symbol3,
-        .address=15,
+        .address=pair3->rom_address,
         .expected_success=-1,
-        .expected_pair = (SymbolAddressPair) {.symbol=symbol3, .rom_address=40}
+        .expected_pair=pair3
     };
 
     return cr_make_param_array(
@@ -126,10 +163,10 @@ ParameterizedTest(
     int in_table = 0;
     if (test_case->expected_success == 0) {
         for (int i=0; i < table->len; i++) {
-            SymbolAddressPair pair = table->pairs[i];
+            SymbolAddressPair *pair = table->pairs[i];
             if (
-                test_case->expected_pair.symbol == pair.symbol && 
-                test_case->expected_pair.rom_address == pair.rom_address 
+                !strcmp(test_case->expected_pair->symbol, pair->symbol) && 
+                test_case->expected_pair->rom_address == pair->rom_address 
             ) in_table = 1;
         }
         cr_assert(eq(in_table, 1));
