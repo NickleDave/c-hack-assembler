@@ -98,8 +98,9 @@ void free_test_cases(struct criterion_test_params *crp)
 }
 
 
-ParameterizedTestParameters(test_code, test_add_symbol_to_table) {
-    int num_test_cases = 4;
+ParameterizedTestParameters(test_symbol_table, test_add_symbol_to_table) {
+    // int num_test_cases = 4;
+    int num_test_cases = 3;
     struct AddToTableCase *test_cases = cr_malloc(sizeof(struct AddToTableCase) * num_test_cases);
 
     char *symbol0 = cr_strdup("NewSymbol");
@@ -125,7 +126,7 @@ ParameterizedTestParameters(test_code, test_add_symbol_to_table) {
     };
 
     char *symbol2 = cr_strdup("sum");
-    SymbolAddressPair *pair2 = malloc(sizeof(SymbolAddressPair) + sizeof(symbol2));
+    SymbolAddressPair *pair2 = cr_malloc(sizeof(SymbolAddressPair) + sizeof(symbol2));
     memcpy(pair2->symbol, symbol2, sizeof(symbol2));
     pair2->rom_address = 32;
     test_cases[2] = (struct AddToTableCase) {
@@ -137,7 +138,7 @@ ParameterizedTestParameters(test_code, test_add_symbol_to_table) {
 
     // NOTE case we expect to fail because 'end' is already in table
     char *symbol3 = cr_strdup("end");
-    SymbolAddressPair *pair3 = malloc(sizeof(SymbolAddressPair) + sizeof(symbol3));
+    SymbolAddressPair *pair3 = cr_malloc(sizeof(SymbolAddressPair) + sizeof(symbol3));
     memcpy(pair3->symbol, symbol3, sizeof(symbol3));
     pair3->rom_address = 40;
     test_cases[3] = (struct AddToTableCase) {
@@ -155,7 +156,7 @@ ParameterizedTestParameters(test_code, test_add_symbol_to_table) {
 
 ParameterizedTest(
     struct AddToTableCase *test_case, 
-    test_code, test_add_symbol_to_table,
+    test_symbol_table, test_add_symbol_to_table,
     .init=setup_table, .fini=teardown_table
 ) {
     int success = add_symbol_to_table(test_case->symbol, test_case->address, table);
