@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "assemble.h"
+
 
 int main(int argc, char *argv[]) {
     if (argc != 2) {
@@ -14,5 +16,7 @@ int main(int argc, char *argv[]) {
         perror("Assembler");
         return EXIT_FAILURE;
     }
+
+    assemble(fp);
 
 }
