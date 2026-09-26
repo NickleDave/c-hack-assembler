@@ -1,9 +1,40 @@
-./Assembler : bin/main.o
-	gcc -o ./Assembler bin/main.o
+# Compiler and flags
+CFLAGS	:= -g -Wall -O3
+LDLIBS	:=
+LDFLAGS	:=
+CC		:= gcc
 
-bin/main.o : src/main.c
-	gcc -Wall -g -c src/main.c -o bin/main.o
+# Target binary
+TARGET	:= Assembler
+
+# Directories
+SRC_DIR		:= src
+BUILD_DIR	:= build
+BIN_DIR		:= bin
+
+# Source and object files
+SRCS	:= $(wildcard $(SRC_DIR)/*.c)
+# Map src/filename.c to build/filename.o
+OBJECTS	:= $(patsubst $(SRC_DIR)/%.c, $(BUILD_DIR)/%.o, $(SRCS))
+# Executable path
+EXEC	:= $(BIN_DIR)/$(TARGET)
+
+.PHONY: all clean
+
+all: $(EXEC)
+
+$(EXEC): $(OBJECTS)
+
+# Link object files into executable
+$(EXEC): $(OBJECTS)
+	$(CC) $(LDFLAGS) $^ -o $@
+	@echo "Build successful"
+
+# Compile C source files into object files
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm bin/*.o
-	rm ./Assembler
+	rm $(BUILD_DIR)/*.o
+	rm $(EXEC)
+	@echo "Clean complete"
