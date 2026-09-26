@@ -12,7 +12,7 @@ SymbolAddressPair* new_pair(char * symbol, int address) {
         fprintf(stderr, "symbol_table::new_pair: malloc failed for new SymbolAddressPair");
         exit(EXIT_FAILURE);
     }
-    memcpy(pair->symbol, symbol, sizeof(symbol));
+    memcpy(pair->symbol, symbol, sizeof(*symbol));
     pair->rom_address = address;
     return pair;
 }
