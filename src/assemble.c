@@ -44,6 +44,12 @@ void assemble(FILE *fp) {
             // and finally, increment `rom_address`
             rom_address += 1;
             break;
+        case COMMENT:
+        case EMPTY_LINE:
+        case ASM_EOF:
+        default:
+            // do nothing for these
+            break;
         }
     }
 
