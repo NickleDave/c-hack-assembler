@@ -175,7 +175,7 @@ struct Command parse_line(char line[]) {
         int line_len = strlen(line_no_whitespace);
 
         // error if we don't find terminating ')'
-        if (!line_no_whitespace[line_len - 1] == ')') {
+        if (line_no_whitespace[line_len - 1] != ')') {
                 fprintf(
                     stderr,
                     "parser::parse_line: line begins with '(' but did not end with ')': %s",
