@@ -18,6 +18,7 @@ void assemble(FILE *fp) {
     Command **parsed_commands = NULL;
     int num_ca_commands_parsed = 0;
 
+    // first pass: parse all lines, and add all L-commands to symbol table
     while ((read = getline(&line, &len, fp)) != -1)
     {
         Command *command = parse_line(line);
@@ -27,6 +28,7 @@ void assemble(FILE *fp) {
             /* code */
             if (table_lookup_symbol(command->symbol, table) == -1)
                 add_symbol_to_table(command->symbol, rom_address, table);
+            free_command(command);
             break;
         case C_COMMAND:
         case A_COMMAND:
@@ -53,8 +55,14 @@ void assemble(FILE *fp) {
         }
     }
 
-    for (int i = 0; i < num_ca_commands_parsed; i++) {
+    printf("Parsed commands:\n");
+    for (int i=0; i < num_ca_commands_parsed; i++) {
         print_command(parsed_commands[i]);
+    }
+    printf("\n");
+    printf("Symbol table:\n");
+    for (int i=0; i < table->len; i++) {
+        printf("\tsymbol=%s, address=%d\n", table->pairs[i]->symbol, table->pairs[i]->rom_address);
     }
 
     for (int i=0; i<num_ca_commands_parsed; i++) {
