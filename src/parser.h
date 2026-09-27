@@ -14,14 +14,14 @@ enum CommandType{
     ASM_EOF,
 };
 
-struct Command {
+typedef struct Command {
     enum CommandType command_type;
     char *symbol;
     int constant;
     char *dest;
     char *comp;
     char *jump;
-};
+} Command;
 
 // functional interface
 void remove_spaces(char str_trimmed[], char str_untrimmed[]);
@@ -29,7 +29,8 @@ bool is_all_digits(char str[]);
 int constant_str_to_int(char * constant_str);
 bool is_valid_symbol(char str[]);
 int char_count(char * str, char char_);
-struct Command parse_line(char line[]);
-void first_pass(FILE *fp);
+void print_command(Command *command);
+void free_command(Command *command);
+Command *parse_line(char line[]);
 
 #endif

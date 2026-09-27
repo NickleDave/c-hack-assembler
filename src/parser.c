@@ -114,9 +114,74 @@ int char_count(char * str, char char_) {
 }
 
 
-struct Command parse_line(char line[]) {
+void print_command(Command *command) {
+    printf(
+        "Command {type=%d, symbol=%s, constant=%d, dest=%s, comp=%s, jump=%s}\n",
+        command->command_type, command->symbol, command->constant,
+        command->dest, command->comp, command->jump
+    );
+}
+
+
+Command *new_command(
+    enum CommandType type, char *symbol, int constant, char *dest, char *comp, char *jump
+) {
+    Command *command;
+    Command *tmp_ptr = malloc(sizeof(Command));
+    if (tmp_ptr == NULL) {
+        fprintf(stderr, "parser::new_command: malloc for command failed");
+        exit(EXIT_FAILURE);
+    }
+    command = tmp_ptr;
+    command->command_type = type;
+    command->constant = constant;
+
+    // now malloc all the strings via strdup
+    char *tmp_symbol = strdup(symbol);
+    if (tmp_symbol == NULL) {
+        fprintf(stderr, "parser::new_command: malloc for symbol failed");
+        exit(EXIT_FAILURE);
+    }
+    command->symbol = tmp_symbol;
+
+    char *tmp_dest = strdup(dest);
+    if (tmp_dest == NULL) {
+        fprintf(stderr, "parser::new_command: malloc for dest failed");
+        exit(EXIT_FAILURE);
+    }
+    command->dest = tmp_dest;
+
+    char *tmp_comp = strdup(comp);
+    if (tmp_comp == NULL) {
+        fprintf(stderr, "parser::new_command: malloc for comp failed");
+        exit(EXIT_FAILURE);
+    }
+    command->comp = tmp_comp;
+
+    char *tmp_jump = strdup(jump);
+    if (tmp_jump == NULL) {
+        fprintf(stderr, "parser::new_command: malloc for jump failed");
+        exit(EXIT_FAILURE);
+    }
+    command->jump = tmp_jump;
+
+    return command;
+}
+
+
+void free_command(Command *command) {
+    free(command->symbol);
+    free(command->dest);
+    free(command->comp);
+    free(command->jump);
+    free(command);
+}
+
+
+
+Command *parse_line(char line[]) {
     if (strcmp(line, "\n\0") == 0) {
-        struct Command command = {EMPTY_LINE};
+        Command *command = new_command(EMPTY_LINE, "", 0, "", "", "");
         return command;
     }
 
@@ -127,7 +192,7 @@ struct Command parse_line(char line[]) {
         *match = '\0';
         if (strlen(line) == 0) {
             // this must have been a comment
-            struct Command command = {COMMENT};
+            Command *command = new_command(COMMENT, "", 0, "", "", "");
             return command;
         }
         line_had_comment = true;
@@ -138,10 +203,10 @@ struct Command parse_line(char line[]) {
     if (strlen(line_no_whitespace) == 0) {
         if (line_had_comment) {
         // this must have been a comment, but with whitespace in front of the "//"
-            struct Command command = {COMMENT};
+            Command *command = new_command(COMMENT, "", 0, "", "", "");
             return command;
         } else {
-            struct Command command = {EMPTY_LINE};
+            Command *command = new_command(EMPTY_LINE, "", 0, "", "", "");
             return command;
         }
     }
@@ -156,11 +221,11 @@ struct Command parse_line(char line[]) {
                 fprintf(stderr, "parse_line: A-command constant is not a valid value (must be between 0 and 32767):\n%s", line);
                 exit(EXIT_FAILURE);
             }
-            struct Command command = {A_COMMAND, .constant=constant};
+            Command *command = new_command(A_COMMAND, "", constant, "", "", "");
             return command;
         } else {
             if (is_valid_symbol(a_value)) {
-                struct Command command = {A_COMMAND, .symbol=a_value};
+                Command *command = new_command(A_COMMAND, a_value, 0, "", "", "");
                 return command;
             } else {
                 fprintf(
@@ -191,7 +256,7 @@ struct Command parse_line(char line[]) {
         l_value[len] = '\0';
         // and if it's a valid symbol, return the command
         if (is_valid_symbol(l_value)) {
-            struct Command command = {L_COMMAND, .symbol=l_value};
+            Command *command = new_command(L_COMMAND, l_value, 0, "", "", "");
             return command;
         } else {
             fprintf(
@@ -252,7 +317,7 @@ struct Command parse_line(char line[]) {
             exit(EXIT_FAILURE);
         }
         
-        struct Command command = {C_COMMAND, .dest=dest, .comp=comp, .jump=jump};
+        Command *command = new_command(C_COMMAND, "", 0, dest, comp, jump);
         return command;
     }
 }
