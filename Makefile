@@ -19,6 +19,10 @@ OBJECTS	:= $(patsubst $(SRC_DIR)/%.c, $(BUILD_DIR)/%.o, $(SRCS))
 # Executable path
 EXEC	:= $(BIN_DIR)/$(TARGET)
 
+ifeq ($(DEBUG), 1)
+    CFLAGS = -Wall -Wextra -g3 -O0 -DDEBUG
+endif
+
 .PHONY: all clean
 
 all: $(EXEC)
@@ -27,7 +31,7 @@ $(EXEC): $(OBJECTS)
 
 # Link object files into executable
 $(EXEC): $(OBJECTS)
-	$(CC) $(LDFLAGS) $^ -o $@
+	$(CC) -g $(LDFLAGS) $^ -o $@
 	@echo "Build successful"
 
 # Compile C source files into object files
