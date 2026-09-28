@@ -1,3 +1,5 @@
+#define _GNU_SOURCE
+
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,18 +9,19 @@
 
 
 SymbolAddressPair* new_pair(char * symbol, int address) {
-    SymbolAddressPair *pair = malloc(sizeof(SymbolAddressPair) + sizeof(symbol));
+    SymbolAddressPair *pair = malloc(sizeof(SymbolAddressPair));
     if (pair == NULL) {
         fprintf(stderr, "symbol_table::new_pair: malloc failed for new SymbolAddressPair");
         exit(EXIT_FAILURE);
     }
-    memcpy(pair->symbol, symbol, sizeof(*symbol));
+    asprintf(&pair->symbol, "%s", symbol);  // we use `asprintf` as a safer version of `strncpy`
     pair->rom_address = address;
     return pair;
 }
 
 
 void free_pair(SymbolAddressPair *pair) {
+    free(pair->symbol); // because we make `symbol` with `asprintf`
     free(pair);
 }
 

@@ -3,8 +3,8 @@
 
 
 typedef struct SymbolAddressPair {
+    char *symbol;
     int rom_address;
-    char symbol[];
 } SymbolAddressPair;
 
 
