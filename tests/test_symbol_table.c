@@ -11,6 +11,72 @@
 
 #include "../src/symbol_table.h"
 
+/* tests for `new_pair` */
+struct NewPairCase {
+    char *symbol;
+    int address;
+};
+
+
+void free_new_pair_cases(struct criterion_test_params *crp)
+{
+    for (size_t i=0; i<crp->length; ++i) {
+        struct NewPairCase *test_case = (struct NewPairCase *) crp->params + i;
+        cr_free(test_case->symbol);
+    }
+    cr_free(crp->params);
+}
+
+
+ParameterizedTestParameters(test_symbol_table, test_new_pair) {
+    int num_test_cases = 4;
+    struct NewPairCase *test_cases = cr_malloc(sizeof(struct NewPairCase) * num_test_cases);
+
+    char *symbol0 = cr_strdup("NewSymbol");
+    test_cases[0] = (struct NewPairCase) {
+        .symbol=symbol0,
+        .address=15,
+    };
+
+    char *symbol1 = cr_strdup("loop2");
+    test_cases[1] = (struct NewPairCase) {
+        .symbol=symbol1,
+        .address=20,
+    };
+
+    char *symbol2 = cr_strdup("sum");
+    test_cases[2] = (struct NewPairCase) {
+        .symbol=symbol2,
+        .address=32,
+    };
+
+    char *symbol3 = cr_strdup("end");
+    test_cases[3] = (struct NewPairCase) {
+        .symbol=symbol3,
+        .address=40,
+    };
+
+    return cr_make_param_array(
+        struct NewPairCase, test_cases, num_test_cases, free_new_pair_cases
+
+    );
+}
+
+
+ParameterizedTest(
+    struct NewPairCase *test_case, 
+    test_symbol_table, test_new_pair
+) {
+    SymbolAddressPair *pair = new_pair(test_case->symbol, test_case->address);
+    cr_assert(
+        eq(
+            strcmp(pair->symbol, test_case->symbol), 0
+        )
+    );
+    cr_assert(eq(pair->rom_address, test_case->address));
+}
+
+
 
 Test(test_symbol_table, test_new_symbol_table) {
     SymbolTable * table = new_symbol_table();
