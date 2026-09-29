@@ -14,6 +14,7 @@ typedef struct SymbolTable {
 } SymbolTable;
 
 
+SymbolAddressPair* new_pair(char * symbol, int address);
 SymbolTable *new_symbol_table(void);
 void free_symbol_table(SymbolTable * table);
 int table_lookup_symbol(char * symbol, SymbolTable* table);
