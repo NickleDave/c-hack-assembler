@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include <criterion/criterion.h>
 #include <criterion/new/assert.h>
 #include <criterion/parameterized.h>
