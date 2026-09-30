@@ -14,10 +14,10 @@ typedef struct SymbolTable {
 } SymbolTable;
 
 
-SymbolAddressPair* new_pair(char * symbol, int address);
+SymbolAddressPair *new_pair(char *symbol, int address);
 SymbolTable *new_symbol_table(void);
-void free_symbol_table(SymbolTable * table);
-int table_lookup_symbol(char * symbol, SymbolTable* table);
-int add_symbol_to_table(char *symbol, int rom_address, SymbolTable* table);
+void free_symbol_table(SymbolTable *table);
+int table_lookup_symbol(char *symbol, SymbolTable *table);
+int add_symbol_to_table(char *symbol, int rom_address, SymbolTable *table);
 
 #endif
