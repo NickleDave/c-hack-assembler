@@ -8,7 +8,7 @@
 #include "symbol_table.h"
 
 
-SymbolAddressPair* new_pair(char * symbol, int address) {
+SymbolAddressPair *new_pair(char * symbol, int address) {
     SymbolAddressPair *pair = malloc(sizeof(SymbolAddressPair));
     if (pair == NULL) {
         fprintf(stderr, "symbol_table::new_pair: malloc failed for new SymbolAddressPair");
@@ -26,8 +26,8 @@ void free_pair(SymbolAddressPair *pair) {
 }
 
 
-SymbolTable* new_symbol_table(void) {
-    SymbolTable * out = malloc(sizeof(SymbolTable));
+SymbolTable *new_symbol_table(void) {
+    SymbolTable *out = malloc(sizeof(SymbolTable));
     if (out == NULL) {
         fprintf(stderr, "symbol_table::new_symbol_table: malloc of table failed");
         exit(EXIT_FAILURE);
@@ -37,7 +37,7 @@ SymbolTable* new_symbol_table(void) {
 }
 
 
-void free_symbol_table(SymbolTable * table) {
+void free_symbol_table(SymbolTable *table) {
     for (int i = 0; i < table->len; i++) {
         free_pair(table->pairs[i]);
     }
@@ -46,7 +46,7 @@ void free_symbol_table(SymbolTable * table) {
 }
 
 
-int table_lookup_symbol(char * symbol, SymbolTable* table) {
+int table_lookup_symbol(char *symbol, SymbolTable *table) {
     for (int i = 0; i < table->len; i++) {
         if (!strcmp(table->pairs[i]->symbol, symbol)) {
             return table->pairs[i]->rom_address;
