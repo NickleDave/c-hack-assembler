@@ -55,6 +55,7 @@ void assemble(FILE *fp) {
         }
     }
 
+    // FIXME: only print if verbose = 1
     printf("Parsed commands:\n");
     for (int i=0; i < num_ca_commands_parsed; i++) {
         print_command(parsed_commands[i]);
@@ -65,6 +66,27 @@ void assemble(FILE *fp) {
         printf("\tsymbol=%s, address=%d\n", table->pairs[i]->symbol, table->pairs[i]->rom_address);
     }
 
+    // second pass
+    int ram_address = 16;
+    char **binary_lines;
+    for (int i=0; i < num_ca_commands_parsed; i++) {
+        Command *command = parsed_commands[i];
+        switch (command->command_type)
+        {
+        case A_COMMAND:
+            // FIXME: just realized we need constant to default
+            // to something that is not zero
+
+            // and finally, increment `rom_address`
+            rom_address += 1;
+            break;   
+
+        case C_COMMAND:
+            // FIX ME: 
+            line = "";
+    }
+
+    // clean up
     for (int i=0; i<num_ca_commands_parsed; i++) {
         free_command(parsed_commands[i]);
     }
