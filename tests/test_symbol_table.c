@@ -1,3 +1,5 @@
+#define _GNU_SOURCE
+
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -112,12 +114,12 @@ static void setup_table(void) {
     for (int i = 0; i < LENGTH; i++) {
         char *symbol = symbols[i];
         int address = addresses[i];
-        SymbolAddressPair *pair = malloc(sizeof(SymbolAddressPair) + sizeof(symbol));
+        SymbolAddressPair *pair = malloc(sizeof(SymbolAddressPair));
         if (pair == NULL) {
             fprintf(stderr, "setup_table: malloc of pair failed");
             exit(EXIT_FAILURE);
         }
-        memcpy(pair->symbol, symbol, sizeof(symbol));
+        asprintf(&pair->symbol, "%s", symbol);
         pair->rom_address = address;
         pairs[i] = pair;
     }
@@ -137,6 +139,7 @@ static void setup_table(void) {
 don't rely on the code under test */
 static void teardown_table(void) {
     for (int i = 0; i < LENGTH; i++) {
+        free(table->pairs[i]->symbol);
         free(table->pairs[i]);
     }
     free(table->pairs);
@@ -214,7 +217,7 @@ ParameterizedTest(
 
 /* tests for `add_symbol_to_table */
 struct AddToTableCase {
-    char * symbol;
+    char *symbol;
     int address;
     int expected_success;
     SymbolAddressPair *expected_pair;
@@ -226,6 +229,7 @@ void free_add_to_table_cases(struct criterion_test_params *crp)
     for (size_t i=0; i<crp->length; ++i) {
         struct AddToTableCase *test_case = (struct AddToTableCase *) crp->params + i;
         cr_free(test_case->symbol);
+        cr_free(test_case->expected_pair->symbol);
         cr_free(test_case->expected_pair);
     }
     cr_free(crp->params);
@@ -237,8 +241,8 @@ ParameterizedTestParameters(test_symbol_table, test_add_symbol_to_table) {
     struct AddToTableCase *test_cases = cr_malloc(sizeof(struct AddToTableCase) * num_test_cases);
 
     char *symbol0 = cr_strdup("NewSymbol");
-    SymbolAddressPair *pair0 = cr_malloc(sizeof(SymbolAddressPair) + sizeof(symbol0));
-    memcpy(pair0->symbol, symbol0, sizeof(symbol0));
+    SymbolAddressPair *pair0 = cr_malloc(sizeof(SymbolAddressPair));
+    pair0->symbol = cr_strdup("NewSymbol");
     pair0->rom_address = 15;
     test_cases[0] = (struct AddToTableCase) {
         .symbol=symbol0,
@@ -248,8 +252,8 @@ ParameterizedTestParameters(test_symbol_table, test_add_symbol_to_table) {
     };
 
     char *symbol1 = cr_strdup("loop2");
-    SymbolAddressPair *pair1 = cr_malloc(sizeof(SymbolAddressPair) + sizeof(symbol1));
-    memcpy(pair1->symbol, symbol1, sizeof(symbol1));
+    SymbolAddressPair *pair1 = cr_malloc(sizeof(SymbolAddressPair));
+    pair1->symbol = cr_strdup("loop2");
     pair1->rom_address = 20;
     test_cases[1] = (struct AddToTableCase) {
         .symbol=symbol1,
@@ -259,8 +263,8 @@ ParameterizedTestParameters(test_symbol_table, test_add_symbol_to_table) {
     };
 
     char *symbol2 = cr_strdup("sum");
-    SymbolAddressPair *pair2 = cr_malloc(sizeof(SymbolAddressPair) + sizeof(symbol2));
-    memcpy(pair2->symbol, symbol2, sizeof(symbol2));
+    SymbolAddressPair *pair2 = cr_malloc(sizeof(SymbolAddressPair));
+    pair2->symbol = cr_strdup("sum");
     pair2->rom_address = 32;
     test_cases[2] = (struct AddToTableCase) {
         .symbol=symbol2,
@@ -271,8 +275,8 @@ ParameterizedTestParameters(test_symbol_table, test_add_symbol_to_table) {
 
     // NOTE case we expect to fail because 'end' is already in table
     char *symbol3 = cr_strdup("end");
-    SymbolAddressPair *pair3 = cr_malloc(sizeof(SymbolAddressPair) + sizeof(symbol3));
-    memcpy(pair3->symbol, symbol3, sizeof(symbol3));
+    SymbolAddressPair *pair3 = cr_malloc(sizeof(SymbolAddressPair));
+    pair3->symbol = cr_strdup("end");
     pair3->rom_address = 40;
     test_cases[3] = (struct AddToTableCase) {
         .symbol=symbol3,
