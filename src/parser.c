@@ -181,7 +181,7 @@ void free_command(Command *command) {
 
 Command *parse_line(char line[]) {
     if (strcmp(line, "\n\0") == 0) {
-        Command *command = new_command(EMPTY_LINE, "", 0, "", "", "");
+        Command *command = new_command(EMPTY_LINE, "", -1, "", "", "");
         return command;
     }
 
@@ -192,7 +192,7 @@ Command *parse_line(char line[]) {
         *match = '\0';
         if (strlen(line) == 0) {
             // this must have been a comment
-            Command *command = new_command(COMMENT, "", 0, "", "", "");
+            Command *command = new_command(COMMENT, "", -1, "", "", "");
             return command;
         }
         line_had_comment = true;
@@ -203,10 +203,10 @@ Command *parse_line(char line[]) {
     if (strlen(line_no_whitespace) == 0) {
         if (line_had_comment) {
         // this must have been a comment, but with whitespace in front of the "//"
-            Command *command = new_command(COMMENT, "", 0, "", "", "");
+            Command *command = new_command(COMMENT, "", -1, "", "", "");
             return command;
         } else {
-            Command *command = new_command(EMPTY_LINE, "", 0, "", "", "");
+            Command *command = new_command(EMPTY_LINE, "", -1, "", "", "");
             return command;
         }
     }
@@ -225,7 +225,7 @@ Command *parse_line(char line[]) {
             return command;
         } else {
             if (is_valid_symbol(a_value)) {
-                Command *command = new_command(A_COMMAND, a_value, 0, "", "", "");
+                Command *command = new_command(A_COMMAND, a_value, -1, "", "", "");
                 return command;
             } else {
                 fprintf(
@@ -256,7 +256,7 @@ Command *parse_line(char line[]) {
         l_value[len] = '\0';
         // and if it's a valid symbol, return the command
         if (is_valid_symbol(l_value)) {
-            Command *command = new_command(L_COMMAND, l_value, 0, "", "", "");
+            Command *command = new_command(L_COMMAND, l_value, -1, "", "", "");
             return command;
         } else {
             fprintf(
