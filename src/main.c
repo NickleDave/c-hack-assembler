@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -5,7 +6,7 @@
 
 
 int main(int argc, char *argv[]) {
-    if (argc != 2) {
+    if (argc < 2) {
         puts("Invalid number of arguments");
     }
 
@@ -17,6 +18,13 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
 
-    assemble(fp);
+    bool verbose;
+    if (argv[2]) {
+        verbose = true;
+    } else {
+        verbose = false;
+    }
+
+    assemble(fp, verbose);
 
 }

@@ -5,9 +5,10 @@
 
 #include "parser.h"
 #include "symbol_table.h"
+#include "assemble.h"
 
 
-void assemble(FILE *fp) {
+void assemble(FILE *fp, bool verbose) {
     char *line = NULL;
     size_t len = 0;
     ssize_t read;
@@ -55,15 +56,16 @@ void assemble(FILE *fp) {
         }
     }
 
-    // FIXME: only print if verbose = 1
-    printf("Parsed commands:\n");
-    for (int i=0; i < num_ca_commands_parsed; i++) {
-        print_command(parsed_commands[i]);
-    }
-    printf("\n");
-    printf("Symbol table:\n");
-    for (int i=0; i < table->len; i++) {
-        printf("\tsymbol=%s, address=%d\n", table->pairs[i]->symbol, table->pairs[i]->rom_address);
+    if (verbose) {
+        printf("Parsed commands:\n");
+        for (int i=0; i < num_ca_commands_parsed; i++) {
+            print_command(parsed_commands[i]);
+        }
+        printf("\n");
+        printf("Symbol table:\n");
+        for (int i=0; i < table->len; i++) {
+            printf("\tsymbol=%s, address=%d\n", table->pairs[i]->symbol, table->pairs[i]->rom_address);
+        }
     }
 
     // second pass
