@@ -82,7 +82,7 @@ int add_symbol_to_table(char *symbol, int rom_address, SymbolTable* table) {
 }
 
 
-SymbolTable *get_predefined_table() {
+SymbolTable *get_predefined_table(void) {
     SymbolTable *table = new_symbol_table();
     add_symbol_to_table("SP", 0, table);
     add_symbol_to_table("LCL", 1, table);
