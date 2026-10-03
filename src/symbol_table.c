@@ -80,3 +80,33 @@ int add_symbol_to_table(char *symbol, int rom_address, SymbolTable* table) {
 
     return 0;
 }
+
+
+SymbolTable *get_predefined_table() {
+    SymbolTable *table = new_symbol_table();
+    add_symbol_to_table("SP", 0, table);
+    add_symbol_to_table("LCL", 1, table);
+    add_symbol_to_table("ARG", 2, table);
+    add_symbol_to_table("THIS", 3, table);
+    add_symbol_to_table("THAT", 4, table);
+    add_symbol_to_table("R0", 0, table);
+    add_symbol_to_table("R1", 1, table);
+    add_symbol_to_table("R2", 2, table);
+    add_symbol_to_table("R3", 3, table);
+    add_symbol_to_table("R4", 4, table);
+    add_symbol_to_table("R5", 5, table);
+    add_symbol_to_table("R6", 6, table);
+    add_symbol_to_table("R7", 7, table);
+    add_symbol_to_table("R8", 8, table);
+    add_symbol_to_table("R9", 9, table);
+    add_symbol_to_table("R10", 10, table);
+    add_symbol_to_table("R11", 11, table);
+    add_symbol_to_table("R12", 12, table);
+    add_symbol_to_table("R13", 13, table);
+    add_symbol_to_table("R14", 14, table);
+    add_symbol_to_table("R15", 15, table);
+    add_symbol_to_table("SCREEN", 16384, table);
+    add_symbol_to_table("KBD", 24576, table);
+    return table;
+}
+
