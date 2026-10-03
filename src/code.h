@@ -9,10 +9,11 @@ https://github.com/ianmurfinxyz/hackass_hack_assembler_c/blob/master/src/decoder
 
 // no language mnemonic in 'Hack' assembly is longer than this.
 #define MAX_MNEMONIC_CHAR_LENGTH 4
+#define MAX_BITS_LENGTH 7
 
 typedef const struct MnemonicBitsPair {
   const char mnemonic[MAX_MNEMONIC_CHAR_LENGTH];
-  uint16_t bits;
+  const char bits[MAX_BITS_LENGTH];
 } MnemonicBitsPair;
 
 extern const MnemonicBitsPair DestStrBitsMap[];
