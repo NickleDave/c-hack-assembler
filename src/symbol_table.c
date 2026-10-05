@@ -15,7 +15,7 @@ SymbolAddressPair *new_pair(char * symbol, int address) {
         exit(EXIT_FAILURE);
     }
     asprintf(&pair->symbol, "%s", symbol);  // we use `asprintf` as a safer version of `strncpy`
-    pair->rom_address = address;
+    pair->address = address;
     return pair;
 }
 
@@ -49,7 +49,7 @@ void free_symbol_table(SymbolTable *table) {
 int table_lookup_symbol(char *symbol, SymbolTable *table) {
     for (int i = 0; i < table->len; i++) {
         if (!strcmp(table->pairs[i]->symbol, symbol)) {
-            return table->pairs[i]->rom_address;
+            return table->pairs[i]->address;
         }
     }
     // -1 is sentinel value that means "symbol not found".
@@ -58,7 +58,7 @@ int table_lookup_symbol(char *symbol, SymbolTable *table) {
 }
 
 
-int add_symbol_to_table(char *symbol, int rom_address, SymbolTable* table) {
+int add_symbol_to_table(char *symbol, int address, SymbolTable* table) {
     // pre-condition: symbol can't already be in table, return fail if it is
     if (!(table_lookup_symbol(symbol, table) == -1)) {
         return -1;
@@ -75,7 +75,7 @@ int add_symbol_to_table(char *symbol, int rom_address, SymbolTable* table) {
     }
     table->pairs = new_pairs_ptr;
 
-    SymbolAddressPair *new_pair_ptr = new_pair(symbol, rom_address);
+    SymbolAddressPair *new_pair_ptr = new_pair(symbol, address);
     table->pairs[table->len - 1] = new_pair_ptr;
 
     return 0;

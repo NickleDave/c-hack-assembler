@@ -4,7 +4,7 @@
 
 typedef struct SymbolAddressPair {
     char *symbol;
-    int rom_address;
+    int address;
 } SymbolAddressPair;
 
 
@@ -18,7 +18,7 @@ SymbolAddressPair *new_pair(char *symbol, int address);
 SymbolTable *new_symbol_table(void);
 void free_symbol_table(SymbolTable *table);
 int table_lookup_symbol(char *symbol, SymbolTable *table);
-int add_symbol_to_table(char *symbol, int rom_address, SymbolTable *table);
+int add_symbol_to_table(char *symbol, int address, SymbolTable *table);
 SymbolTable *get_predefined_table(void);
 
 #endif
