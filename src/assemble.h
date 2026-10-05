@@ -4,6 +4,11 @@
 #ifndef ASSEMBLE_H
 #define ASSEMBLE_H
 
-void assemble(FILE *fp, bool verbose);
+typedef struct {
+    int num_strings;
+    char** strings;
+} BinaryStrings;
+
+BinaryStrings assemble(FILE *fp, bool verbose);
 
 #endif

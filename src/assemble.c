@@ -3,12 +3,45 @@
 
 #include <sys/types.h>
 
+#include "code.h"
 #include "parser.h"
 #include "symbol_table.h"
+
 #include "assemble.h"
 
 
-void assemble(FILE *fp, bool verbose) {
+#define INT_BITS 15
+
+// `int_to_bin_str` adapted from
+// https://github.com/sahillathwal/c-hack-assembler/blob/main/main.c#L19
+
+char *int_to_bin_str(int int_value) {
+     char* bin_str[17];
+     bin_str[0] = '0';  // most significant bit is always 0, to indicate A-instruction
+     bin_str[16] = '\0'; // null terminator, because this is a "string"
+
+    for (int i = 0; i < INT_BITS; i++) {
+        // next line: bitwise and with 1 isolates the lowest bit,
+        // i.e., the least significant digit.
+        // if the number is even, this will be 0. If odd, 1.
+        // We then add the result to '0' to get the char, either '0'
+        // if the result was 0, or '1' if the results was 1
+        bin_str[INT_BITS - 1 - i] = (int_value & 1) + '0';
+        // bit-shift right; since we know `int_value` must always be positive
+        // (required for string constants + enforced by ram/rom address scheme)
+        // this will be an arithmetic shift that fills the new bit on the left
+        // with zero.
+        int_value >>= 1;
+    }
+
+    return bin_str;
+}
+
+
+#define BIN_LINE_LEN 16
+
+
+BinaryStrings assemble(FILE *fp, bool verbose) {
     char *line = NULL;
     size_t len = 0;
     ssize_t read;
@@ -64,28 +97,61 @@ void assemble(FILE *fp, bool verbose) {
         printf("\n");
         printf("Symbol table:\n");
         for (int i=0; i < table->len; i++) {
-            printf("\tsymbol=%s, address=%d\n", table->pairs[i]->symbol, table->pairs[i]->rom_address);
+            printf("\tsymbol=%s, address=%d\n", table->pairs[i]->symbol, table->pairs[i]->address);
         }
     }
 
     // second pass
     int ram_address = 16;
-    char **binary_lines;
-    for (int i=0; i < num_ca_commands_parsed; i++) {
-        Command *command = parsed_commands[i];
-        switch (command->command_type)
+    SymbolTable *predef_table = get_predefined_table();
+    char** binary_lines = malloc(sizeof(char*) * num_ca_commands_parsed);
+    for (int line_num=0; line_num < num_ca_commands_parsed; line_num++) {
+        Command *command = parsed_commands[line_num];
+        char *bin_line = malloc(sizeof(char) * BIN_LINE_LEN);
+        if (command->command_type == A_COMMAND)
         {
-        case A_COMMAND:
-            // FIXME: just realized we need constant to default
-            // to something that is not zero
+            if ((command->constant > -1) && !(strcmp(command->symbol, ""))) {
+                bin_line = int_to_bin_str(command->constant);
+                binary_lines[line_num] = bin_line;
+            } else {
+                int address;
 
-            // and finally, increment `rom_address`
-            rom_address += 1;
-            break;   
+                address = table_lookup_symbol(command->symbol, predef_table);
+                if (address > -1) {
+                    bin_line = int_to_bin_str(address);
+                    binary_lines[line_num] = bin_line;
+                    continue;
+                }
 
-        case C_COMMAND:
-            // FIX ME: 
-            line = "";
+                address = table_lookup_symbol(command->symbol, table);
+                if (address > -1) {
+                    bin_line = int_to_bin_str(address);
+                    binary_lines[line_num] = bin_line;
+                    continue;
+                }
+
+                // if we make it here, we didn't find the symbol in either table
+                // so we need to add it
+                add_symbol_to_table(command->symbol, ram_address, table);
+                ram_address += 1;
+            }
+
+        } else if (command->command_type == C_COMMAND) {
+            snprintf(
+                bin_line,
+                (sizeof(char) * BIN_LINE_LEN),
+                "%s%s%s%s",
+                "111",
+                dest_bits_str_from_mnemonic(command->dest),
+                comp_bits_str_from_mnemonic(command->comp),
+                jump_bits_str_from_mnemonic(command->jump)
+            );
+            binary_lines[line_num] = bin_line;
+        } else {
+            // this should never happen
+            fprintf(stderr, "assemble: unexpected command type in second pass: %s", command->command_type);
+            exit(EXIT_FAILURE);
+        }
     }
 
     // clean up
@@ -93,4 +159,10 @@ void assemble(FILE *fp, bool verbose) {
         free_command(parsed_commands[i]);
     }
     free_symbol_table(table);
+
+    BinaryStrings out = {
+        .num_strings=num_ca_commands_parsed,
+        .strings=binary_lines,
+    };
+    return out;
 }
