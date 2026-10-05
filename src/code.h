@@ -24,4 +24,8 @@ bool is_valid_dest(char * token);
 bool is_valid_comp(char * token);
 bool is_valid_jump(char * token);
 
+char* dest_bits_str_from_mnemonic(char* mnemonic);
+char* comp_bits_str_from_mnemonic(char* mnemonic);
+char* jump_bits_str_from_mnemonic(char* mnemonic);
+
 #endif

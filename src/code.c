@@ -60,7 +60,7 @@ const MnemonicBitsPair JumpStrBitsMap[] = {
 };
 
 
-bool is_valid_dest(char * token) {
+bool is_valid_dest(char* token) {
     bool matched = false;
     for (int i = 0; i<8; i++) {
         if (!strcmp(token, DestStrBitsMap[i].mnemonic)) {
@@ -70,8 +70,16 @@ bool is_valid_dest(char * token) {
     return matched;
 }
 
+char* dest_bits_str_from_mnemonic(char* mnemonic) {
+    for (int i = 0; i<8; i++) {
+        if (!strcmp(mnemonic, DestStrBitsMap[i].mnemonic)) {
+            return DestStrBitsMap[i].bits;
+        }
+    }
+}
 
-bool is_valid_comp(char * token) {
+
+bool is_valid_comp(char* token) {
     bool matched = false;
     for (int i = 0; i<28; i++) {
         if (!strcmp(token, CompStrBitsMap[i].mnemonic)) {
@@ -82,7 +90,16 @@ bool is_valid_comp(char * token) {
 }
 
 
-bool is_valid_jump(char * token) {
+char* comp_bits_str_from_mnemonic(char* mnemonic) {
+    for (int i = 0; i<28; i++) {
+        if (!strcmp(mnemonic, CompStrBitsMap[i].mnemonic)) {
+            return CompStrBitsMap[i].bits;
+        }
+    }
+}
+
+
+bool is_valid_jump(char* token) {
     bool matched = false;
     for (int i = 0; i<8; i++) {
         if (!strcmp(token, JumpStrBitsMap[i].mnemonic)) {
@@ -90,4 +107,13 @@ bool is_valid_jump(char * token) {
         }
     }
     return matched;
+}
+
+
+char* jump_bits_str_from_mnemonic(char* mnemonic) {
+    for (int i = 0; i<8; i++) {
+        if (!strcmp(mnemonic, JumpStrBitsMap[i].mnemonic)) {
+            return JumpStrBitsMap[i].bits;
+        }
+    }
 }
