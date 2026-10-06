@@ -1,3 +1,6 @@
+#define _GNU_SOURCE
+
+#include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
 
@@ -60,6 +63,17 @@ const MnemonicBitsPair JumpStrBitsMap[] = {
 };
 
 
+char* copy_mnemonic(const char* mnemonic) {
+    char* copy = NULL;
+    int result;
+    result = asprintf(&copy, "%s", mnemonic);
+    if (result == -1) {
+        perror("asprintf malloc failed in `copy_mnemonic`");
+    }
+    return copy;
+}
+
+
 bool is_valid_dest(char* token) {
     bool matched = false;
     for (int i = 0; i<8; i++) {
@@ -73,9 +87,10 @@ bool is_valid_dest(char* token) {
 char* dest_bits_str_from_mnemonic(char* mnemonic) {
     for (int i = 0; i<8; i++) {
         if (!strcmp(mnemonic, DestStrBitsMap[i].mnemonic)) {
-            return DestStrBitsMap[i].bits;
+            return copy_mnemonic(DestStrBitsMap[i].bits);
         }
     }
+    return "-1";
 }
 
 
@@ -93,9 +108,10 @@ bool is_valid_comp(char* token) {
 char* comp_bits_str_from_mnemonic(char* mnemonic) {
     for (int i = 0; i<28; i++) {
         if (!strcmp(mnemonic, CompStrBitsMap[i].mnemonic)) {
-            return CompStrBitsMap[i].bits;
+            return copy_mnemonic(CompStrBitsMap[i].bits);
         }
     }
+    return "-1";
 }
 
 
@@ -113,7 +129,8 @@ bool is_valid_jump(char* token) {
 char* jump_bits_str_from_mnemonic(char* mnemonic) {
     for (int i = 0; i<8; i++) {
         if (!strcmp(mnemonic, JumpStrBitsMap[i].mnemonic)) {
-            return JumpStrBitsMap[i].bits;
+            return copy_mnemonic(JumpStrBitsMap[i].bits);
         }
     }
+    return "-1";
 }
