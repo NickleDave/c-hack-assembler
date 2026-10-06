@@ -1,7 +1,5 @@
-/* 
-adapted from 
-https://github.com/ianmurfinxyz/hackass_hack_assembler_c/blob/master/src/decoder.c
-*/
+#include <stdbool.h>
+
 #ifndef CODE_H
 #define CODE_H
 
