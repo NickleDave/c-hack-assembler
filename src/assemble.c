@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <sys/types.h>
 
@@ -10,15 +11,16 @@
 #include "assemble.h"
 
 
+#define BIN_STR_LEN 17
 #define INT_BITS 15
 
 // `int_to_bin_str` adapted from
 // https://github.com/sahillathwal/c-hack-assembler/blob/main/main.c#L19
 
 char *int_to_bin_str(int int_value) {
-     char* bin_str[17];
-     bin_str[0] = '0';  // most significant bit is always 0, to indicate A-instruction
-     bin_str[16] = '\0'; // null terminator, because this is a "string"
+    char* bin_str = malloc(sizeof(char) * BIN_STR_LEN);    
+    bin_str[0] = '0';  // most significant bit is always 0, to indicate A-instruction
+    bin_str[16] = '\0'; // null terminator, because this is a "string"
 
     for (int i = 0; i < INT_BITS; i++) {
         // next line: bitwise and with 1 isolates the lowest bit,
@@ -30,7 +32,7 @@ char *int_to_bin_str(int int_value) {
         // bit-shift right; since we know `int_value` must always be positive
         // (required for string constants + enforced by ram/rom address scheme)
         // this will be an arithmetic shift that fills the new bit on the left
-        // with zero.
+        // with zero.    char bin_str[17];
         int_value >>= 1;
     }
 
@@ -149,7 +151,7 @@ BinaryStrings assemble(FILE *fp, bool verbose) {
             binary_lines[line_num] = bin_line;
         } else {
             // this should never happen
-            fprintf(stderr, "assemble: unexpected command type in second pass: %s", command->command_type);
+            fprintf(stderr, "assemble: unexpected command type in second pass: %d", command->command_type);
             exit(EXIT_FAILURE);
         }
     }
