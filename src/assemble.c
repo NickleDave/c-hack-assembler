@@ -39,9 +39,6 @@ char *int_to_bin_str(int int_value) {
 }
 
 
-#define BIN_LINE_LEN 16
-
-
 BinaryStrings assemble(FILE *fp, bool verbose) {
     char *line = NULL;
     size_t len = 0;
@@ -108,25 +105,24 @@ BinaryStrings assemble(FILE *fp, bool verbose) {
     char** binary_lines = malloc(sizeof(char*) * num_ca_commands_parsed);
     for (int line_num=0; line_num < num_ca_commands_parsed; line_num++) {
         Command *command = parsed_commands[line_num];
-        char *bin_line = malloc(sizeof(char) * BIN_LINE_LEN);
         if (command->command_type == A_COMMAND)
         {
             if ((command->constant > -1) && !(strcmp(command->symbol, ""))) {
-                bin_line = int_to_bin_str(command->constant);
+                char* bin_line = int_to_bin_str(command->constant);
                 binary_lines[line_num] = bin_line;
             } else {
                 int address;
 
                 address = table_lookup_symbol(command->symbol, predef_table);
                 if (address > -1) {
-                    bin_line = int_to_bin_str(address);
+                    char* bin_line = int_to_bin_str(address);
                     binary_lines[line_num] = bin_line;
                     continue;
                 }
 
                 address = table_lookup_symbol(command->symbol, table);
                 if (address > -1) {
-                    bin_line = int_to_bin_str(address);
+                    char* bin_line = int_to_bin_str(address);
                     binary_lines[line_num] = bin_line;
                     continue;
                 }
@@ -138,9 +134,10 @@ BinaryStrings assemble(FILE *fp, bool verbose) {
             }
 
         } else if (command->command_type == C_COMMAND) {
+            char *bin_line = malloc(sizeof(char) * BIN_STR_LEN);
             snprintf(
                 bin_line,
-                (sizeof(char) * BIN_LINE_LEN),
+                (sizeof(char) * BIN_STR_LEN),
                 "%s%s%s%s",
                 "111",
                 dest_bits_str_from_mnemonic(command->dest),
