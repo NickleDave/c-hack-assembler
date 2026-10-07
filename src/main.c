@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
 
     /* write to output file */
     for (int i = 0; i < binstrings.num_strings; i++) {
-        fprintf(out_fp, "%s", binstrings.strings[i]);
+        fprintf(out_fp, "%s\n", binstrings.strings[i]);
     }
 
     /* free binary strings */
