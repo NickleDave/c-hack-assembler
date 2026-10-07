@@ -7,7 +7,10 @@
 
 // no language mnemonic in 'Hack' assembly is longer than this.
 #define MAX_MNEMONIC_CHAR_LENGTH 4
-#define MAX_BITS_LENGTH 7
+// no "binary string" that any mnemonic maps to is longer than this;
+// these are really only for C-instructions; the dest + jump fields 
+// have 3-character binary strings, the comp field has 7-character strings
+#define MAX_BITS_LENGTH 8  // NOTE! 7 characters *plus* the null terminator
 
 typedef const struct MnemonicBitsPair {
   const char mnemonic[MAX_MNEMONIC_CHAR_LENGTH];
