@@ -12,23 +12,22 @@
 
 
 #define BIN_STR_LEN 17
-#define INT_BITS 15
 
 // `int_to_bin_str` adapted from
 // https://github.com/sahillathwal/c-hack-assembler/blob/main/main.c#L19
 
 char *int_to_bin_str(int int_value) {
-    char* bin_str = malloc(sizeof(char) * BIN_STR_LEN);    
+    char* bin_str = malloc(sizeof(char) * BIN_STR_LEN);
     bin_str[0] = '0';  // most significant bit is always 0, to indicate A-instruction
     bin_str[16] = '\0'; // null terminator, because this is a "string"
 
-    for (int i = 0; i < INT_BITS; i++) {
+    for (int i = 0; i < BIN_STR_LEN - 2; i++) {
         // next line: bitwise and with 1 isolates the lowest bit,
         // i.e., the least significant digit.
         // if the number is even, this will be 0. If odd, 1.
         // We then add the result to '0' to get the char, either '0'
         // if the result was 0, or '1' if the results was 1
-        bin_str[INT_BITS - 1 - i] = (int_value & 1) + '0';
+        bin_str[BIN_STR_LEN - 2 - i] = (int_value & 1) + '0';
         // bit-shift right; since we know `int_value` must always be positive
         // (required for string constants + enforced by ram/rom address scheme)
         // this will be an arithmetic shift that fills the new bit on the left
