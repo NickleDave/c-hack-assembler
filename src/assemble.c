@@ -140,8 +140,8 @@ BinaryStrings assemble(FILE *fp, bool verbose) {
                 (sizeof(char) * BIN_STR_LEN),
                 "%s%s%s%s",
                 "111",
-                dest_bits_str_from_mnemonic(command->dest),
                 comp_bits_str_from_mnemonic(command->comp),
+                dest_bits_str_from_mnemonic(command->dest),
                 jump_bits_str_from_mnemonic(command->jump)
             );
             binary_lines[line_num] = bin_line;
