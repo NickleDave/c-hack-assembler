@@ -1,4 +1,4 @@
-# hackc
+# c-hack-assembler
 
 A Hack assembler written in C
 
@@ -11,4 +11,29 @@ I did look at the following implementations:
 - https://codeberg.org/zakuArbor/hackAssembler
 - https://github.com/sahillathwal/c-hack-assembler
 
+## Usage
 
+To compile Hack assembly to binary, run:
+```
+Assembler Add.asm
+```
+
+By default, this will create a file with the same base name and the `.Hack` extension,
+that contains the binary program as strings.
+
+## Set-up
+
+Running tests requires [Criterion](https://criterion.readthedocs.io/en/master/).
+
+```
+sudo apt-get install libcriterion-dev
+```
+
+## Build
+
+To build the binary, run:
+```
+make all
+```
+
+This compiles down to `./bin/Assembler`
