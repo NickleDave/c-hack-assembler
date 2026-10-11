@@ -119,7 +119,11 @@ static void setup_table(void) {
             fprintf(stderr, "setup_table: malloc of pair failed");
             exit(EXIT_FAILURE);
         }
-        asprintf(&pair->symbol, "%s", symbol);
+        int len = asprintf(&pair->symbol, "%s", symbol);
+        if (len == -1) {
+            fprintf(stderr, "setup_table:asprintf of symbol failed");
+            exit(EXIT_FAILURE);
+        }
         pair->address = address;
         pairs[i] = pair;
     }
