@@ -23,4 +23,3 @@ testsuite_LDFLAGS = $(CRITERION_LIBS)
 
 check_PROGRAMS = testsuite
 TESTS = $(check_PROGRAMS)
-

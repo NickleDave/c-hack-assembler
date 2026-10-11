@@ -1,6 +1,9 @@
-AC_INIT([hackc], [0.1], [nickledave@users.noreply.github.com])
+AC_PRERQ([2.73])
+AC_INIT([hackc], [0.1])
 
-AM_INIT_AUTOMAKE([-Wall -Werror foreign])
+AC_CONFIG_SRCDIR([src/main.c])
+
+AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])
 
 AC_PROG_CC
 
@@ -13,8 +16,6 @@ AC_SUBST([CRITERION_LIBS])
 
 AC_CONFIG_FILES([
     Makefile
-    src/Makefile
-    tests/Makefile
 ])
 
 AC_OUTPUT
