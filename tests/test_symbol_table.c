@@ -75,7 +75,7 @@ ParameterizedTest(
             strcmp(pair->symbol, test_case->symbol), 0
         )
     );
-    cr_assert(eq(pair->rom_address, test_case->address));
+    cr_assert(eq(pair->address, test_case->address));
 }
 
 
@@ -120,7 +120,7 @@ static void setup_table(void) {
             exit(EXIT_FAILURE);
         }
         asprintf(&pair->symbol, "%s", symbol);
-        pair->rom_address = address;
+        pair->address = address;
         pairs[i] = pair;
     }
 
@@ -243,10 +243,10 @@ ParameterizedTestParameters(test_symbol_table, test_add_symbol_to_table) {
     char *symbol0 = cr_strdup("NewSymbol");
     SymbolAddressPair *pair0 = cr_malloc(sizeof(SymbolAddressPair));
     pair0->symbol = cr_strdup("NewSymbol");
-    pair0->rom_address = 15;
+    pair0->address = 15;
     test_cases[0] = (struct AddToTableCase) {
         .symbol=symbol0,
-        .address=pair0->rom_address,
+        .address=pair0->address,
         .expected_success=0,
         .expected_pair=pair0
     };
@@ -254,10 +254,10 @@ ParameterizedTestParameters(test_symbol_table, test_add_symbol_to_table) {
     char *symbol1 = cr_strdup("loop2");
     SymbolAddressPair *pair1 = cr_malloc(sizeof(SymbolAddressPair));
     pair1->symbol = cr_strdup("loop2");
-    pair1->rom_address = 20;
+    pair1->address = 20;
     test_cases[1] = (struct AddToTableCase) {
         .symbol=symbol1,
-        .address=pair1->rom_address,
+        .address=pair1->address,
         .expected_success=0,
         .expected_pair=pair1
     };
@@ -265,10 +265,10 @@ ParameterizedTestParameters(test_symbol_table, test_add_symbol_to_table) {
     char *symbol2 = cr_strdup("sum");
     SymbolAddressPair *pair2 = cr_malloc(sizeof(SymbolAddressPair));
     pair2->symbol = cr_strdup("sum");
-    pair2->rom_address = 32;
+    pair2->address = 32;
     test_cases[2] = (struct AddToTableCase) {
         .symbol=symbol2,
-        .address=pair2->rom_address,
+        .address=pair2->address,
         .expected_success=0,
         .expected_pair=pair2
     };
@@ -277,10 +277,10 @@ ParameterizedTestParameters(test_symbol_table, test_add_symbol_to_table) {
     char *symbol3 = cr_strdup("end");
     SymbolAddressPair *pair3 = cr_malloc(sizeof(SymbolAddressPair));
     pair3->symbol = cr_strdup("end");
-    pair3->rom_address = 40;
+    pair3->address = 40;
     test_cases[3] = (struct AddToTableCase) {
         .symbol=symbol3,
-        .address=pair3->rom_address,
+        .address=pair3->address,
         .expected_success=-1,
         .expected_pair=pair3
     };
@@ -305,7 +305,7 @@ ParameterizedTest(
             SymbolAddressPair *pair = table->pairs[i];
             if (
                 !strcmp(test_case->expected_pair->symbol, pair->symbol) && 
-                test_case->expected_pair->rom_address == pair->rom_address 
+                test_case->expected_pair->address == pair->address 
             ) in_table = 1;
         }
         cr_assert(eq(in_table, 1));
