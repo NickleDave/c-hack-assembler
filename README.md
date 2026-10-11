@@ -23,17 +23,31 @@ that contains the binary program as strings.
 
 ## Set-up
 
-Running tests requires [Criterion](https://criterion.readthedocs.io/en/master/).
+The build is done with Autotools.
 
+For the initial set-up to build, run the following in the project root:
+
+```
+autoreconf --install
+```
+
+Running tests requires [Criterion](https://criterion.readthedocs.io/en/master/).
 ```
 sudo apt-get install libcriterion-dev
 ```
 
 ## Build
 
-To build the binary, run:
+To build (after setting up to build by running `autoreconf --install`), do the following:
 ```
-make all
+cd build
+../configure
+make
 ```
 
-This compiles down to `./bin/Assembler`
+This compiles `./build/src/Assembler`
+
+To build the tests, do:
+```
+make check
+```
