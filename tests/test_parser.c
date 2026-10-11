@@ -319,8 +319,8 @@ Test(test_parser, test_parse_empty_line)
 {
     char line[] = "\n\0";
     struct Command expected_command = {EMPTY_LINE};
-    struct Command returned_command = parse_line(line);
-    cr_assert(eq(type(struct Command), expected_command, returned_command));
+    struct Command *returned_command = parse_line(line);
+    cr_assert(eq(type(struct Command), expected_command, *returned_command));
 }
 
 // ---- test `parse_line` with a comment -----------------------------------------------------------------------------------------------
@@ -328,16 +328,16 @@ Test(test_parser, test_parse_comment)
 {
     char line[] = "//this is a comment \0";
     struct Command expected_command = {COMMENT};
-    struct Command returned_command = parse_line(line);
-    cr_assert(eq(type(struct Command), expected_command, returned_command));
+    struct Command *returned_command = parse_line(line);
+    cr_assert(eq(type(struct Command), expected_command, *returned_command));
 }
 
 Test(test_parser, test_parse_comment_with_whitespace)
 {
     char line[] = "  //this is a comment \0";
     struct Command expected_command = {COMMENT};
-    struct Command returned_command = parse_line(line);
-    cr_assert(eq(type(struct Command), expected_command, returned_command));
+    struct Command *returned_command = parse_line(line);
+    cr_assert(eq(type(struct Command), expected_command, *returned_command));
 }
 
 
@@ -345,8 +345,8 @@ Test(test_parser, test_parse_empty_line_with_whitespace)
 {
     char line[] = "   ";
     struct Command expected_command = {EMPTY_LINE};
-    struct Command returned_command = parse_line(line);
-    cr_assert(eq(type(struct Command), expected_command, returned_command));
+    struct Command *returned_command = parse_line(line);
+    cr_assert(eq(type(struct Command), expected_command, *returned_command));
 }
 
 
@@ -401,8 +401,8 @@ ParameterizedTestParameters(test_parser, test_a_command) {
 
 
 #define assert_command(params) {                                                        \
-    struct Command returned_command = parse_line(params->line);                         \
-    cr_assert(eq(type(struct Command), params->expected_command, returned_command));    \
+    struct Command *returned_command = parse_line(params->line);                         \
+    cr_assert(eq(type(struct Command), params->expected_command, *returned_command));    \
 }                                                                                       \
 
 
