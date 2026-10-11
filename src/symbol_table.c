@@ -14,7 +14,11 @@ SymbolAddressPair *new_pair(char * symbol, int address) {
         fprintf(stderr, "symbol_table::new_pair: malloc failed for new SymbolAddressPair");
         exit(EXIT_FAILURE);
     }
-    asprintf(&pair->symbol, "%s", symbol);  // we use `asprintf` as a safer version of `strncpy`
+    int len = asprintf(&pair->symbol, "%s", symbol);  // we use `asprintf` as a safer version of `strncpy`
+    if (len == -1) {
+        fprintf(stderr, "symbol_table::new_pair: asprint of symbol failed for new SymbolAddressPair");
+        exit(EXIT_FAILURE);
+    }
     pair->address = address;
     return pair;
 }
