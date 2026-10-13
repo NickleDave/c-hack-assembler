@@ -36,7 +36,10 @@ int main(int argc, char *argv[]) {
     // do this before `assemble`, in case it fails
     char* basename = extract_filename(argv[1]);
     char* out_filename;
-    asprintf(&out_filename, "%s%s", basename, ".hack");
+    int len = asprintf(&out_filename, "%s%s", basename, ".hack");
+    if (len == -1) {
+        fprintf(stderr, "main: asprintf failed when writing out_filename");
+    }
     FILE *out_fp;
     out_fp = fopen(out_filename, "w");
     if (out_fp == NULL) {
