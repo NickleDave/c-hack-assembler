@@ -317,7 +317,7 @@ Command *parse_line(char line[]) {
             exit(EXIT_FAILURE);
         }
         
-        Command *command = new_command(C_COMMAND, "", 0, dest, comp, jump);
+        Command *command = new_command(C_COMMAND, "", -1, dest, comp, jump);
         return command;
     }
 }
