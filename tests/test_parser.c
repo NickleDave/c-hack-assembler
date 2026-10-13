@@ -280,10 +280,11 @@ int cr_user_Command_eq(struct Command *a, struct Command *b)
     they are `==` (both NULL); else test they are equal with `strcmp`"
     */
     return(
+        a->command_type == b->command_type && 
         (
             a->symbol == NULL || b->symbol == NULL
         // NOTE in next line that `!strcmp` has an exclamation mark, because it returns 0 when strings match
-        ) ? a->command_type == b->command_type : !strcmp(a->symbol, b->symbol) && 
+        ) ? a->symbol == b->symbol : !strcmp(a->symbol, b->symbol) && 
         a->constant == b->constant &&
         (
             a->dest == NULL || b->dest == NULL
@@ -293,7 +294,7 @@ int cr_user_Command_eq(struct Command *a, struct Command *b)
         ) ? a->comp == b->comp : !strcmp(a->comp, b->comp) &&
         (
             a->jump == NULL || b->jump
-        ) ? a->jump == b->jump : strcmp(a->jump, b->jump)
+        ) ? a->jump == b->jump : !strcmp(a->jump, b->jump)
     );
 }
 
