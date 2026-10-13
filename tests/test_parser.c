@@ -376,27 +376,39 @@ ParameterizedTestParameters(test_parser, test_a_command) {
 
     params[0] = (struct ParseLineParameters) {
         .line=cr_strdup("@Abcde"),
-        .expected_command=(struct Command) {A_COMMAND, .symbol=cr_strdup("Abcde")}
+        .expected_command=(struct Command) {
+            A_COMMAND, .symbol=cr_strdup("Abcde"), .constant=-1, .dest=cr_strdup(""), .comp=cr_strdup(""),  .jump=cr_strdup("")
+        }
     };
     params[1] = (struct ParseLineParameters) {
         .line=cr_strdup("@A"),
-        .expected_command=(struct Command) {A_COMMAND, .symbol=cr_strdup("A")}
+        .expected_command=(struct Command) {
+            A_COMMAND, .symbol=cr_strdup("A"), .constant=-1, .dest=cr_strdup(""), .comp=cr_strdup(""),  .jump=cr_strdup("")
+        }
     };
     params[2] = (struct ParseLineParameters) {
         .line=cr_strdup("@:Symbol"),
-        .expected_command=(struct Command) {A_COMMAND, .symbol=cr_strdup(":Symbol")}
+        .expected_command=(struct Command) {
+            A_COMMAND, .symbol=cr_strdup(":Symbol"), .constant=-1, .dest=cr_strdup(""), .comp=cr_strdup(""),  .jump=cr_strdup("")
+        }
     };
     params[3] = (struct ParseLineParameters) {
         .line=cr_strdup("@12345"),
-        .expected_command=(struct Command) {A_COMMAND, .constant=12345}
+        .expected_command=(struct Command) {
+            A_COMMAND, .symbol=cr_strdup(""), .constant=12345, .dest=cr_strdup(""), .comp=cr_strdup(""),  .jump=cr_strdup("")
+        }
     };
     params[4] = (struct ParseLineParameters) {
         .line=cr_strdup("@0"),
-        .expected_command=(struct Command) {A_COMMAND, .constant=0}
+        .expected_command=(struct Command) {
+            A_COMMAND, .symbol=cr_strdup(""), .constant=0, .dest=cr_strdup(""), .comp=cr_strdup(""),  .jump=cr_strdup("")
+        }
     };
     params[5] = (struct ParseLineParameters) {
         .line=cr_strdup("@32767"),
-        .expected_command=(struct Command) {A_COMMAND, .constant=32767}
+        .expected_command=(struct Command) {
+            A_COMMAND, .symbol=cr_strdup(""), .constant=32767, .dest=cr_strdup(""), .comp=cr_strdup(""),  .jump=cr_strdup("")
+        }
     };
 
     return cr_make_param_array(
@@ -423,15 +435,21 @@ ParameterizedTestParameters(test_parser, test_l_command) {
 
     params[0] = (struct ParseLineParameters) {
         .line=cr_strdup("(Abcde)"),
-        .expected_command=(struct Command) {L_COMMAND, .symbol=cr_strdup("Abcde")}
+        .expected_command=(struct Command) {
+            L_COMMAND, .symbol=cr_strdup("Abcde"), .constant=-1, .dest=cr_strdup(""), .comp=cr_strdup(""),  .jump=cr_strdup("")
+        }
     };
     params[1] = (struct ParseLineParameters) {
         .line=cr_strdup("(A)"),
-        .expected_command=(struct Command) {L_COMMAND, .symbol=cr_strdup("A")}
+        .expected_command=(struct Command) {
+            L_COMMAND, .symbol=cr_strdup("A"), .constant=-1, .dest=cr_strdup(""), .comp=cr_strdup(""),  .jump=cr_strdup("")
+        }
     };
     params[2] = (struct ParseLineParameters) {
         .line=cr_strdup("(:Symbol)"),
-        .expected_command=(struct Command) {L_COMMAND, .symbol=cr_strdup(":Symbol")}
+        .expected_command=(struct Command) {
+            L_COMMAND, .symbol=cr_strdup(":Symbol"), .constant=-1, .dest=cr_strdup(""), .comp=cr_strdup(""),  .jump=cr_strdup("")
+        }
     };
 
     return cr_make_param_array(
@@ -452,27 +470,39 @@ ParameterizedTestParameters(test_parser, test_c_command) {
 
     params[0] = (struct ParseLineParameters) {
         .line=cr_strdup("D=A"),
-        .expected_command=(struct Command) {C_COMMAND, .dest=cr_strdup("D"), .comp=cr_strdup("A")}
+        .expected_command=(struct Command) {
+            C_COMMAND, .symbol=cr_strdup(""), .constant=-1, .dest=cr_strdup("D"), .comp=cr_strdup("A"), .jump=cr_strdup("")
+        }
     };
     params[1] = (struct ParseLineParameters) {
         .line=cr_strdup("D=D+A"),
-        .expected_command=(struct Command) {C_COMMAND, .dest=cr_strdup("D"), .comp=cr_strdup("D+A")}
+        .expected_command=(struct Command) {
+            C_COMMAND, .symbol=cr_strdup(""), .constant=-1, .dest=cr_strdup("D"), .comp=cr_strdup("D+A"), .jump=cr_strdup("")
+        }
     };
     params[2] = (struct ParseLineParameters) {
         .line=cr_strdup("M=D"),
-        .expected_command=(struct Command) {C_COMMAND, .dest=cr_strdup("M"), .comp=cr_strdup("D")}
+        .expected_command=(struct Command) {
+            C_COMMAND, .symbol=cr_strdup(""), .constant=-1, .dest=cr_strdup("M"), .comp=cr_strdup("D"), .jump=cr_strdup("")
+        }
     };
     params[3] = (struct ParseLineParameters) {
         .line=cr_strdup("D;JGT"),
-        .expected_command=(struct Command) {C_COMMAND, .comp=cr_strdup("D"), .jump=cr_strdup("JGT")}
+        .expected_command=(struct Command) {
+            C_COMMAND, .symbol=cr_strdup(""), .constant=-1, .dest=cr_strdup(""), .comp=cr_strdup("D"), .jump=cr_strdup("JGT")
+        }
     };
     params[4] = (struct ParseLineParameters) {
         .line=cr_strdup("0;JMP"),
-        .expected_command=(struct Command) {C_COMMAND, .comp=cr_strdup("0"), .jump=cr_strdup("JMP")}
+        .expected_command=(struct Command) {
+            C_COMMAND, .symbol=cr_strdup(""), .constant=-1, .dest=cr_strdup(""), .comp=cr_strdup("0"), .jump=cr_strdup("JMP")
+        }
     };
     params[5] = (struct ParseLineParameters) {
         .line=cr_strdup("AM=M-1"),
-        .expected_command=(struct Command) {C_COMMAND, .dest=cr_strdup("AM"), .comp=cr_strdup("M-1")}
+        .expected_command=(struct Command) {
+            C_COMMAND, .symbol=cr_strdup(""), .constant=-1, .dest=cr_strdup("AM"), .comp=cr_strdup("M-1"), .jump=cr_strdup("")
+        }
     };
 
     return cr_make_param_array(
