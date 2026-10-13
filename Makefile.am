@@ -10,16 +10,26 @@ Assembler_SOURCES = \
     src/symbol_table.h \
     src/main.c
 
+check_PROGRAMS = \
+    test_code \
+    test_parser \
+    test_symbol_table
 
-testsuite_SOURCES = \
-    tests/cr_helpers.c \
-    tests/test_code.c \
-    tests/test_parser.c \
-    tests/test_symbol_table.c \
-    $(Assembler_SOURCES)
+test_code_SOURCES = \
+    tests/test_code.c tests/cr_helpers.c src/code.c
 
-testsuite_CFLAGS = $(CRITERION_CFLAGS)
-testsuite_LDFLAGS = $(CRITERION_LIBS)
+test_parser_SOURCES = \
+    tests/test_parser.c  tests/cr_helpers.c src/parser.c src/code.c
 
-check_PROGRAMS = testsuite
+test_symbol_table_SOURCES = \
+    tests/test_symbol_table.c tests/cr_helpers.c src/symbol_table.c
+
+test_code_CFLAGS = $(CRITERION_CFLAGS)
+test_code_LDFLAGS = $(CRITERION_LIBS)
+test_parser_CFLAGS = $(CRITERION_CFLAGS)
+test_parser_LDFLAGS = $(CRITERION_LIBS)
+test_symbol_table_CFLAGS = $(CRITERION_CFLAGS)
+test_symbol_table_LDFLAGS = $(CRITERION_LIBS)
+
+
 TESTS = $(check_PROGRAMS)
