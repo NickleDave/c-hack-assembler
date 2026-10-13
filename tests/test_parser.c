@@ -361,6 +361,10 @@ void free_ParseLineParameters(struct criterion_test_params *crp) {
     for (size_t i = 0; i < crp->length; ++i) {
         struct ParseLineParameters * params = (struct ParseLineParameters *) crp->params + i;
         cr_free(params->line);
+        cr_free(params->expected_command.symbol);
+        cr_free(params->expected_command.dest);
+        cr_free(params->expected_command.comp);
+        cr_free(params->expected_command.jump);
     }
     cr_free(crp->params);
 }
