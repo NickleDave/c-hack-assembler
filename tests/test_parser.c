@@ -305,11 +305,11 @@ char *cr_user_Command_tostr(struct Command *d)
         &out, 
         "struct Command{.command_type=%d, .symbol=%s, .constant=%d, .dest = %s, .comp = %s, .jump = %s }", 
         d->command_type,
-        d->symbol,
+        d->symbol ? d->symbol : "NULL",
         d->constant, 
-        d->dest,
-        d->comp,
-        d->jump
+        d->dest ? d->dest : "NULL",
+        d->comp ? d->comp : "NULL",
+        d->jump ? d->jump : "NULL"
     );
     return out;
 }
