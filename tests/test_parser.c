@@ -293,7 +293,7 @@ int cr_user_Command_eq(struct Command *a, struct Command *b)
             a->comp == NULL || b->comp == NULL
         ) ? a->comp == b->comp : !strcmp(a->comp, b->comp) &&
         (
-            a->jump == NULL || b->jump
+            a->jump == NULL || b->jump == NULL
         ) ? a->jump == b->jump : !strcmp(a->jump, b->jump)
     );
 }
